@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Layout, Section, FadeIn } from "@/components/Layout";
-import { MessageCircle, Instagram, Youtube, MapPin, Clock, Mail } from "lucide-react";
+import { Shell, Slow } from "@/components/Layout";
 import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — Youth on Fire Ministries" },
-      { name: "description", content: "Get in touch with the youth leadership team, plan a visit, or send a prayer request." },
+      { title: "Whisper — Youth on Fire" },
+      { name: "description", content: "Send a word. We are listening." },
     ],
   }),
   component: Contact,
@@ -15,79 +15,124 @@ export const Route = createFileRoute("/contact")({
 
 function Contact() {
   const [sent, setSent] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
   return (
-    <Layout>
-      <Section eyebrow="Contact" title="Reach out. We'd love to hear from you.">
-        <div className="grid md:grid-cols-2 gap-16">
-          <FadeIn>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                setSent(true);
-              }}
-              className="space-y-6"
-            >
-              {[
-                { n: "name", l: "Name", t: "text" },
-                { n: "email", l: "Email", t: "email" },
-              ].map((f) => (
-                <div key={f.n}>
-                  <label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{f.l}</label>
-                  <input
+    <Shell>
+      <section className="min-h-screen flex items-center px-6">
+        <div className="max-w-xl mx-auto w-full">
+          <Slow>
+            <p className="text-[10px] tracking-[0.4em] uppercase text-foreground/40 mb-12">— whisper —</p>
+            <h1 className="font-display italic text-4xl md:text-6xl leading-[1.1] text-foreground/85 mb-20 text-balance">
+              Send a word.
+              <br />
+              <span className="text-foreground/50">We are listening.</span>
+            </h1>
+          </Slow>
+
+          <AnimatePresence mode="wait">
+            {!sent ? (
+              <motion.form
+                key="form"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1.2 }}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setSent(true);
+                }}
+                className="space-y-12"
+              >
+                {[
+                  { n: "name", l: "your name, if you wish", t: "text" },
+                  { n: "email", l: "a way back to you", t: "email" },
+                ].map((f) => (
+                  <div key={f.n}>
+                    <label className="text-[10px] tracking-[0.4em] uppercase text-foreground/40">{f.l}</label>
+                    <input
+                      required
+                      type={f.t}
+                      name={f.n}
+                      className="mt-3 w-full bg-transparent border-0 border-b border-border/40 focus:border-primary py-3 outline-none font-display italic text-xl text-foreground/90 transition-colors duration-1000"
+                    />
+                  </div>
+                ))}
+                <div>
+                  <label className="text-[10px] tracking-[0.4em] uppercase text-foreground/40">a word, a prayer, a question</label>
+                  <textarea
                     required
-                    type={f.t}
-                    name={f.n}
-                    className="mt-2 w-full bg-transparent border-b border-border/60 py-3 focus:border-primary outline-none transition-colors duration-500"
+                    rows={4}
+                    name="message"
+                    className="mt-3 w-full bg-transparent border-0 border-b border-border/40 focus:border-primary py-3 outline-none font-display italic text-xl text-foreground/90 resize-none transition-colors duration-1000"
                   />
                 </div>
-              ))}
-              <div>
-                <label className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Message / Prayer request</label>
-                <textarea
-                  required
-                  rows={5}
-                  name="message"
-                  className="mt-2 w-full bg-transparent border-b border-border/60 py-3 focus:border-primary outline-none transition-colors duration-500 resize-none"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={sent}
-                className="bg-primary text-primary-foreground px-6 py-3.5 rounded-full text-sm font-medium hover:bg-primary/90 transition-all duration-500 disabled:opacity-60"
+                <button
+                  type="submit"
+                  className="group inline-flex items-center gap-4 mt-8"
+                >
+                  <span className="text-[10px] tracking-[0.4em] uppercase text-foreground/50 group-hover:text-primary transition-colors duration-1000">
+                    send, quietly
+                  </span>
+                  <span className="block w-8 h-px bg-foreground/40 group-hover:bg-primary group-hover:w-16 transition-all duration-[1500ms]" />
+                </button>
+              </motion.form>
+            ) : (
+              <motion.div
+                key="sent"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1.6 }}
+                className="font-display italic text-3xl text-foreground/70"
               >
-                {sent ? "Message received — we'll be in touch" : "Send message"}
-              </button>
-            </form>
-          </FadeIn>
+                received. <span className="text-foreground/40">we will sit with it.</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          <FadeIn delay={0.15}>
-            <div className="space-y-10">
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-primary/80 mb-3 flex items-center gap-2"><MapPin size={12} /> Location</p>
-                <p className="font-display text-2xl leading-snug">Main Auditorium<br />12 Revival Avenue, City Center</p>
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-primary/80 mb-3 flex items-center gap-2"><Clock size={12} /> Service times</p>
-                <p className="text-foreground/80">Friday Youth Night — 6:30 PM</p>
-                <p className="text-foreground/80">Sunday Service — 9:00 & 11:00 AM</p>
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-primary/80 mb-3 flex items-center gap-2"><Mail size={12} /> Email</p>
-                <a href="mailto:hello@youthonfire.org" className="link-quiet text-foreground/90">hello@youthonfire.org</a>
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-primary/80 mb-4">Follow us</p>
-                <div className="flex gap-4 text-foreground/70">
-                  <a href="#" aria-label="WhatsApp" className="hover:text-primary transition-colors duration-500"><MessageCircle size={22} /></a>
-                  <a href="#" aria-label="Instagram" className="hover:text-primary transition-colors duration-500"><Instagram size={22} /></a>
-                  <a href="#" aria-label="YouTube" className="hover:text-primary transition-colors duration-500"><Youtube size={22} /></a>
-                </div>
-              </div>
-            </div>
-          </FadeIn>
+          <div className="mt-32">
+            <button
+              onClick={() => setShowDetails((s) => !s)}
+              className="group flex items-center gap-4"
+            >
+              <span className="text-[10px] tracking-[0.4em] uppercase text-foreground/40 group-hover:text-foreground transition-colors duration-1000">
+                {showDetails ? "hide" : "or, find us"}
+              </span>
+              <span className="block w-8 h-px bg-foreground/30 group-hover:bg-foreground/70 transition-colors duration-1000" />
+            </button>
+            <AnimatePresence>
+              {showDetails && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 1.4, ease: [0.2, 0.8, 0.2, 1] }}
+                  className="overflow-hidden"
+                >
+                  <div className="pt-10 space-y-8 text-foreground/70">
+                    <div>
+                      <p className="text-[10px] tracking-[0.4em] uppercase text-foreground/40 mb-2">where</p>
+                      <p className="font-display italic text-xl">12 revival avenue, city center</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] tracking-[0.4em] uppercase text-foreground/40 mb-2">when</p>
+                      <p className="font-display italic text-xl">friday — 6:30pm · sunday — 9 & 11am</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] tracking-[0.4em] uppercase text-foreground/40 mb-2">email</p>
+                      <a href="mailto:hello@youthonfire.org" className="font-display italic text-xl hover:text-primary transition-colors duration-1000">
+                        hello@youthonfire.org
+                      </a>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
-      </Section>
-    </Layout>
+      </section>
+
+      <div className="h-32" />
+    </Shell>
   );
 }
