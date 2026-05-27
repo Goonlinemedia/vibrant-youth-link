@@ -1,153 +1,177 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { Menu, X, Instagram, Youtube, MessageCircle } from "lucide-react";
+import logo from "@/assets/logo.jpeg";
 
 const nav = [
-  { to: "/", label: "Threshold", index: "00" },
-  { to: "/about", label: "Origin", index: "01" },
-  { to: "/sermons", label: "Echoes", index: "02" },
-  { to: "/events", label: "Gatherings", index: "03" },
-  { to: "/resources", label: "Embers", index: "04" },
-  { to: "/gallery", label: "Traces", index: "05" },
-  { to: "/contact", label: "Whisper", index: "06" },
+  { to: "/", label: "Home" },
+  { to: "/about", label: "About" },
+  { to: "/events", label: "Events" },
+  { to: "/sermons", label: "Sermons" },
+  { to: "/resources", label: "Resources" },
+  { to: "/gallery", label: "Gallery" },
+  { to: "/contact", label: "Contact" },
 ];
 
-export function Shell({ children }: { children: ReactNode }) {
+export function Layout({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const current = nav.find((n) => n.to === pathname) ?? nav[0];
 
   return (
-    <div className="grain min-h-screen bg-background text-foreground selection:bg-primary/30 relative overflow-x-hidden">
-      {/* Ambient corner mark — index */}
-      <div className="fixed top-6 left-6 md:top-8 md:left-10 z-40 text-[10px] tracking-[0.4em] uppercase text-foreground/40">
-        <span className="tabular-nums">{current.index}</span>
-        <span className="mx-3 text-foreground/20">/</span>
-        <span>{current.label}</span>
-      </div>
+    <div className="grain min-h-screen flex flex-col bg-background text-foreground">
+      <header className="fixed top-0 inset-x-0 z-50 backdrop-blur-xl bg-background/60 border-b border-border/40">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-3 group">
+            <img src={logo} alt="Youth on Fire Ministries" className="h-9 w-9 rounded-full object-cover" />
+            <span className="font-display text-lg tracking-wide text-foreground/90 hidden sm:block">
+              Youth on Fire
+            </span>
+          </Link>
 
-      {/* Hidden nav trigger */}
-      <button
-        aria-label="Open navigation"
-        onClick={() => setOpen(true)}
-        className="fixed top-6 right-6 md:top-8 md:right-10 z-40 group flex items-center gap-3"
-      >
-        <span className="text-[10px] tracking-[0.4em] uppercase text-foreground/30 group-hover:text-foreground/80 transition-colors duration-[1200ms]">
-          Enter
-        </span>
-        <span className="block w-8 h-px bg-foreground/30 group-hover:bg-foreground/80 group-hover:w-12 transition-all duration-[1200ms]" />
-      </button>
+          <nav className="hidden md:flex items-center gap-8 text-sm">
+            {nav.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={`link-quiet text-foreground/70 hover:text-foreground ${
+                  pathname === item.to ? "text-foreground" : ""
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
 
-      {/* Whisper at bottom */}
-      <div className="fixed bottom-6 left-6 md:bottom-8 md:left-10 z-40 text-[10px] tracking-[0.4em] uppercase text-foreground/30">
-        Youth · on · Fire
-      </div>
-      <div className="fixed bottom-6 right-6 md:bottom-8 md:right-10 z-40 text-[10px] tracking-[0.4em] uppercase text-foreground/30 tabular-nums hidden sm:block">
-        MMXXVI
-      </div>
-
-      {/* Overlay nav */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.2, ease: [0.2, 0.8, 0.2, 1] }}
-            className="fixed inset-0 z-50 bg-background/90 backdrop-blur-2xl"
+          <button
+            aria-label="Toggle menu"
+            onClick={() => setOpen((o) => !o)}
+            className="md:hidden text-foreground/80 hover:text-foreground transition-colors"
           >
-            <button
-              aria-label="Close"
-              onClick={() => setOpen(false)}
-              className="absolute top-6 right-6 md:top-8 md:right-10 group flex items-center gap-3"
+            {open ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
+
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
+              className="md:hidden overflow-hidden border-t border-border/40 bg-background/95 backdrop-blur-xl"
             >
-              <span className="text-[10px] tracking-[0.4em] uppercase text-foreground/50 group-hover:text-foreground transition-colors duration-700">
-                Close
-              </span>
-              <span className="block w-8 h-px bg-foreground/50 group-hover:bg-foreground transition-colors duration-700" />
-            </button>
-
-            <nav className="h-full w-full flex flex-col items-center justify-center gap-3 md:gap-5 px-6">
-              {nav.map((item, i) => (
-                <motion.div
-                  key={item.to}
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.15 + i * 0.08, duration: 1, ease: [0.2, 0.8, 0.2, 1] }}
-                  className="group"
-                >
-                  <Link
-                    to={item.to}
-                    onClick={() => setOpen(false)}
-                    className="flex items-baseline gap-6 md:gap-10"
+              <div className="px-6 py-6 flex flex-col gap-5">
+                {nav.map((item, i) => (
+                  <motion.div
+                    key={item.to}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.05 * i, duration: 0.5 }}
                   >
-                    <span className="text-[10px] tracking-[0.4em] text-foreground/30 tabular-nums group-hover:text-primary transition-colors duration-700">
-                      {item.index}
-                    </span>
-                    <span className="font-display italic text-3xl md:text-6xl text-foreground/70 group-hover:text-foreground group-hover:tracking-wide transition-all duration-[1200ms]">
+                    <Link
+                      to={item.to}
+                      onClick={() => setOpen(false)}
+                      className="font-display text-2xl text-foreground/80 hover:text-primary transition-colors"
+                    >
                       {item.label}
-                    </span>
-                  </Link>
-                </motion.div>
-              ))}
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
 
-      {/* Page content with slow fade */}
-      <motion.main
-        key={pathname}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.6, ease: [0.2, 0.8, 0.2, 1] }}
-      >
-        {children}
-      </motion.main>
+      <main className="flex-1 pt-16">
+        <motion.div
+          key={pathname}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease: [0.2, 0.8, 0.2, 1] }}
+        >
+          {children}
+        </motion.div>
+      </main>
+
+      <footer className="border-t border-border/40 mt-24">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-16 grid gap-12 md:grid-cols-3">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <img src={logo} alt="" className="h-10 w-10 rounded-full" />
+              <span className="font-display text-xl">Youth on Fire</span>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
+              A generation set ablaze by the Spirit — pursuing Christ, building community, carrying the flame.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4">Explore</h4>
+            <ul className="space-y-2 text-sm">
+              {nav.slice(1).map((n) => (
+                <li key={n.to}>
+                  <Link to={n.to} className="link-quiet text-foreground/70 hover:text-foreground">
+                    {n.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4">Follow the flame</h4>
+            <div className="flex gap-4 text-foreground/70">
+              <a href="#" aria-label="Instagram" className="hover:text-primary transition-colors duration-500"><Instagram size={20} /></a>
+              <a href="#" aria-label="YouTube" className="hover:text-primary transition-colors duration-500"><Youtube size={20} /></a>
+              <a href="#" aria-label="WhatsApp" className="hover:text-primary transition-colors duration-500"><MessageCircle size={20} /></a>
+            </div>
+            <p className="mt-6 text-xs text-muted-foreground">
+              © {new Date().getFullYear()} Youth on Fire Ministries. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
 
-export function Slow({ children, delay = 0, y = 12 }: { children: ReactNode; delay?: number; y?: number }) {
+export function Section({
+  eyebrow,
+  title,
+  children,
+  className = "",
+}: {
+  eyebrow?: string;
+  title?: string;
+  children?: ReactNode;
+  className?: string;
+}) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 1.6, delay, ease: [0.2, 0.8, 0.2, 1] }}
-    >
+    <section className={`max-w-7xl mx-auto px-6 lg:px-10 py-24 md:py-32 ${className}`}>
+      {eyebrow && (
+        <p className="text-xs uppercase tracking-[0.3em] text-primary/80 mb-6">{eyebrow}</p>
+      )}
+      {title && (
+        <h2 className="font-display text-4xl md:text-6xl text-balance max-w-3xl mb-12 leading-[1.05]">
+          {title}
+        </h2>
+      )}
       {children}
-    </motion.div>
+    </section>
   );
 }
 
-export function Reveal({ children, label }: { children: ReactNode; label: string }) {
-  const [shown, setShown] = useState(false);
+export function FadeIn({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
   return (
-    <button
-      onMouseEnter={() => setShown(true)}
-      onFocus={() => setShown(true)}
-      onClick={() => setShown((s) => !s)}
-      className="group block text-left w-full"
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 1, delay, ease: [0.2, 0.8, 0.2, 1] }}
     >
-      <span className="text-[10px] tracking-[0.4em] uppercase text-foreground/40 group-hover:text-primary transition-colors duration-1000">
-        {label}
-      </span>
-      <AnimatePresence>
-        {shown && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 1.2, ease: [0.2, 0.8, 0.2, 1] }}
-            className="overflow-hidden"
-          >
-            <div className="pt-4 text-foreground/70 font-display italic text-xl leading-relaxed max-w-md">
-              {children}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </button>
+      {children}
+    </motion.div>
   );
 }

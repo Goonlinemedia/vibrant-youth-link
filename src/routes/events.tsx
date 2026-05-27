@@ -1,23 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Shell, Slow } from "@/components/Layout";
+import { Layout, Section, FadeIn } from "@/components/Layout";
 import { useEffect, useState } from "react";
+import { ArrowUpRight } from "lucide-react";
 import event from "@/assets/event.jpg";
 
 export const Route = createFileRoute("/events")({
   head: () => ({
     meta: [
-      { title: "Gatherings — Youth on Fire" },
-      { name: "description", content: "Where we will be." },
+      { title: "Events — Youth on Fire Ministries" },
+      { name: "description", content: "Upcoming camps, conferences, prayer nights and outreach with Youth on Fire Ministries." },
     ],
   }),
   component: Events,
 });
 
-const gatherings = [
-  { date: "2026-06-14T18:00:00", t: "carriers", place: "Mountview", featured: true, n: "i" },
-  { date: "2026-06-02T19:00:00", t: "burning hearts", place: "the main hall", n: "ii" },
-  { date: "2026-06-21T16:00:00", t: "campus", place: "city university", n: "iii" },
-  { date: "2026-07-09T18:30:00", t: "encounter", place: "the main hall", n: "iv" },
+const upcoming = [
+  { date: "2026-06-14T18:00:00", name: "Carriers Camp 2026", place: "Mountview Retreat", tag: "Camp", featured: true },
+  { date: "2026-06-02T19:00:00", name: "Burning Hearts — Prayer Night", place: "Main Auditorium", tag: "Prayer" },
+  { date: "2026-06-21T16:00:00", name: "Campus Outreach", place: "City University", tag: "Outreach" },
+  { date: "2026-07-09T18:30:00", name: "Worship Encounter", place: "Main Auditorium", tag: "Worship" },
 ];
 
 function useCountdown(target: string) {
@@ -27,76 +28,78 @@ function useCountdown(target: string) {
     return () => clearInterval(id);
   }, []);
   const diff = Math.max(0, new Date(target).getTime() - now);
-  return {
-    d: Math.floor(diff / 86400000),
-    h: Math.floor((diff / 3600000) % 24),
-    m: Math.floor((diff / 60000) % 60),
-    s: Math.floor((diff / 1000) % 60),
-  };
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff / 3600000) % 24);
+  const m = Math.floor((diff / 60000) % 60);
+  const s = Math.floor((diff / 1000) % 60);
+  return { d, h, m, s };
 }
 
 function Events() {
-  const featured = gatherings.find((g) => g.featured)!;
+  const featured = upcoming.find((e) => e.featured)!;
   const c = useCountdown(featured.date);
 
   return (
-    <Shell>
-      <section className="relative min-h-screen flex items-center overflow-hidden">
-        <div className="absolute inset-0">
-          <img src={event} alt="" className="h-full w-full object-cover opacity-30 blur-[2px]" />
-          <div className="absolute inset-0 bg-background/40" />
-        </div>
-        <div className="relative z-10 max-w-3xl mx-auto px-6 w-full">
-          <Slow>
-            <p className="text-[10px] tracking-[0.4em] uppercase text-foreground/40 mb-12">— next —</p>
-            <h1 className="font-display italic text-5xl md:text-8xl leading-[1] text-foreground/90 text-balance">
-              {featured.t}.
-            </h1>
-            <p className="mt-8 text-[10px] tracking-[0.4em] uppercase text-foreground/40">
-              {new Date(featured.date).toLocaleDateString("en", { day: "numeric", month: "long", year: "numeric" })} · {featured.place}
-            </p>
+    <Layout>
+      <Section eyebrow="Events" title="Mark your calendar.">
+        <FadeIn>
+          <div className="relative rounded-md overflow-hidden">
+            <img src={event} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-60" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-background/20" />
+            <div className="relative p-10 md:p-16 min-h-[420px] flex flex-col justify-end">
+              <p className="text-xs uppercase tracking-[0.3em] text-primary/90">Featured · {featured.tag}</p>
+              <h3 className="font-display text-4xl md:text-6xl mt-4 max-w-2xl">{featured.name}</h3>
+              <p className="mt-3 text-foreground/70">{featured.place}</p>
 
-            <div className="mt-20 flex gap-10 text-foreground/70 tabular-nums">
-              {[["d", c.d], ["h", c.h], ["m", c.m], ["s", c.s]].map(([k, v]) => (
-                <div key={k as string}>
-                  <div className="font-display italic text-3xl md:text-5xl">{String(v).padStart(2, "0")}</div>
-                  <div className="text-[10px] tracking-[0.4em] uppercase text-foreground/30 mt-1">{k}</div>
-                </div>
-              ))}
+              <div className="mt-10 grid grid-cols-4 gap-4 max-w-md">
+                {[
+                  ["Days", c.d],
+                  ["Hours", c.h],
+                  ["Min", c.m],
+                  ["Sec", c.s],
+                ].map(([l, v]) => (
+                  <div key={l as string} className="text-center">
+                    <div className="font-display text-3xl md:text-5xl tabular-nums">
+                      {String(v).padStart(2, "0")}
+                    </div>
+                    <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mt-1">{l}</div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </Slow>
-        </div>
-      </section>
+          </div>
+        </FadeIn>
+      </Section>
 
-      <section className="min-h-screen flex items-center px-6">
-        <div className="max-w-3xl mx-auto w-full">
-          <Slow>
-            <p className="text-[10px] tracking-[0.4em] uppercase text-foreground/30 mb-16">— the others —</p>
-          </Slow>
-          <ul className="divide-y divide-border/30 border-y border-border/30">
-            {gatherings.filter((g) => !g.featured).map((g, i) => {
-              const d = new Date(g.date);
-              return (
-                <Slow key={g.t} delay={i * 0.1}>
-                  <li className="py-10 grid grid-cols-12 gap-4 items-baseline group cursor-pointer">
-                    <span className="col-span-1 text-[10px] tracking-[0.3em] uppercase text-foreground/30 group-hover:text-primary transition-colors duration-1000">
-                      {g.n}
+      <Section eyebrow="All events" title="What's coming up.">
+        <ul className="divide-y divide-border/40 border-y border-border/40">
+          {upcoming.map((e, i) => {
+            const d = new Date(e.date);
+            return (
+              <FadeIn key={e.name} delay={i * 0.05}>
+                <li className="grid grid-cols-12 gap-4 py-8 items-center group cursor-pointer hover:px-4 transition-all duration-700">
+                  <div className="col-span-3 md:col-span-2">
+                    <div className="font-display text-3xl md:text-4xl">{d.getDate()}</div>
+                    <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                      {d.toLocaleString("en", { month: "short" })}
+                    </div>
+                  </div>
+                  <div className="col-span-9 md:col-span-7">
+                    <p className="text-xs uppercase tracking-[0.2em] text-primary/70 mb-1">{e.tag}</p>
+                    <p className="font-display text-2xl md:text-3xl">{e.name}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{e.place}</p>
+                  </div>
+                  <div className="hidden md:flex col-span-3 justify-end">
+                    <span className="inline-flex items-center gap-2 text-sm text-foreground/70 group-hover:text-primary transition-colors duration-700">
+                      Register <ArrowUpRight size={14} />
                     </span>
-                    <span className="col-span-7 font-display italic text-2xl md:text-3xl text-foreground/70 group-hover:text-foreground transition-colors duration-1000">
-                      {g.t}
-                    </span>
-                    <span className="col-span-4 text-[10px] tracking-[0.3em] uppercase text-foreground/30 text-right">
-                      {d.toLocaleDateString("en", { day: "numeric", month: "short" })} · {g.place}
-                    </span>
-                  </li>
-                </Slow>
-              );
-            })}
-          </ul>
-        </div>
-      </section>
-
-      <div className="h-32" />
-    </Shell>
+                  </div>
+                </li>
+              </FadeIn>
+            );
+          })}
+        </ul>
+      </Section>
+    </Layout>
   );
 }
