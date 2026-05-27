@@ -1,8 +1,9 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Menu, X, Instagram, Youtube, MessageCircle } from "lucide-react";
+import { Instagram, Youtube, MessageCircle } from "lucide-react";
 import logo from "@/assets/logo.jpeg";
+import { AtmosphericSoundWave } from "@/components/Atmosphere";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -15,104 +16,177 @@ const nav = [
 ];
 
 export function Layout({ children }: { children: ReactNode }) {
-  const [open, setOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <div className="grain min-h-screen flex flex-col bg-background text-foreground">
-      <header className="fixed top-0 inset-x-0 z-50 backdrop-blur-xl bg-background/60 border-b border-border/40">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 group">
-            <img src={logo} alt="Youth on Fire Ministries" className="h-9 w-9 rounded-full object-cover" />
-            <span className="font-display text-lg tracking-wide text-foreground/90 hidden sm:block">
+    <div className="grain min-h-screen flex flex-col bg-background text-foreground relative overflow-hidden select-none">
+      {/* Header bar */}
+      <header className="fixed top-0 inset-x-0 z-50 bg-transparent">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 h-24 flex items-center justify-between pointer-events-auto">
+          {/* Logo & Brand */}
+          <Link to="/" className="flex items-center gap-3 group z-[110]">
+            <img 
+              src={logo} 
+              alt="Youth on Fire Ministries" 
+              className="h-10 w-10 rounded-full object-cover border border-primary/20 opacity-70 group-hover:opacity-100 group-hover:border-primary/60 transition-all duration-[1000ms]" 
+            />
+            <span className="font-display text-lg tracking-[0.2em] text-foreground/60 group-hover:text-foreground/90 transition-all duration-[1000ms] uppercase hidden sm:block">
               Youth on Fire
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-8 text-sm">
-            {nav.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={`link-quiet text-foreground/70 hover:text-foreground ${
-                  pathname === item.to ? "text-foreground" : ""
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+          {/* Center Soundscape Wave Control */}
+          <div className="z-[110]">
+            <AtmosphericSoundWave />
+          </div>
 
+          {/* Right Floating Cryptic Ember Key */}
           <button
-            aria-label="Toggle menu"
-            onClick={() => setOpen((o) => !o)}
-            className="md:hidden text-foreground/80 hover:text-foreground transition-colors"
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="relative z-[110] flex items-center gap-3 cursor-pointer group focus:outline-none"
+            aria-label="Toggle Portal"
           >
-            {open ? <X size={22} /> : <Menu size={22} />}
+            <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground group-hover:text-primary transition-colors duration-[1000ms]">
+              {menuOpen ? "dissolve" : "portal"}
+            </span>
+            <div className="relative w-8 h-8 flex items-center justify-center">
+              {/* Spinning Outer Orbit Ring */}
+              <span
+                className={`absolute inset-0 rounded-full border border-primary/20 transition-all duration-[1500ms] group-hover:border-primary/50 ${
+                  menuOpen ? "rotate-180 border-accent/40 scale-110" : ""
+                }`}
+                style={{
+                  animation: "spinSlow 12s linear infinite",
+                }}
+              />
+              {/* Core glowing ember */}
+              <span
+                className={`w-2 h-2 rounded-full transition-all duration-[1200ms] ease-in-out ${
+                  menuOpen ? "bg-accent scale-125" : "bg-primary"
+                }`}
+                style={{
+                  boxShadow: menuOpen 
+                    ? "0 0 12px rgba(239, 68, 68, 0.8)" 
+                    : "0 0 8px rgba(249, 115, 22, 0.8)",
+                }}
+              />
+            </div>
           </button>
         </div>
-
-        <AnimatePresence>
-          {open && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-              className="md:hidden overflow-hidden border-t border-border/40 bg-background/95 backdrop-blur-xl"
-            >
-              <div className="px-6 py-6 flex flex-col gap-5">
-                {nav.map((item, i) => (
-                  <motion.div
-                    key={item.to}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.05 * i, duration: 0.5 }}
-                  >
-                    <Link
-                      to={item.to}
-                      onClick={() => setOpen(false)}
-                      className="font-display text-2xl text-foreground/80 hover:text-primary transition-colors"
-                    >
-                      {item.label}
-                    </Link>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </header>
 
-      <main className="flex-1 pt-16">
-        <motion.div
-          key={pathname}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, ease: [0.2, 0.8, 0.2, 1] }}
-        >
-          {children}
-        </motion.div>
+      {/* Cryptic Portal Navigation Overlay */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+            animate={{ opacity: 1, backdropFilter: "blur(30px)" }}
+            exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+            transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-0 z-[100] bg-background/95 flex flex-col justify-between p-10 md:p-16 select-none pointer-events-auto"
+          >
+            {/* Top Empty Space just to buffer layout */}
+            <div className="h-16" />
+
+            {/* Main Mystical Links */}
+            <div className="max-w-4xl mx-auto w-full flex flex-col justify-center items-center text-center flex-1">
+              <nav className="flex flex-col gap-6 md:gap-8">
+                {nav.map((item, i) => {
+                  const isActive = pathname === item.to;
+                  return (
+                    <motion.div
+                      key={item.to}
+                      initial={{ opacity: 0, y: 30, filter: "blur(10px)", letterSpacing: "-0.05em" }}
+                      animate={{ opacity: 1, y: 0, filter: "blur(0px)", letterSpacing: "0.15em" }}
+                      exit={{ opacity: 0, y: -20, filter: "blur(6px)", letterSpacing: "-0.05em" }}
+                      transition={{ 
+                        duration: 1.8, 
+                        delay: i * 0.08, 
+                        ease: [0.16, 1, 0.3, 1] 
+                      }}
+                    >
+                      <Link
+                        to={item.to}
+                        onClick={() => setMenuOpen(false)}
+                        className={`font-display text-4xl sm:text-5xl md:text-6xl uppercase font-light transition-all duration-[1200ms] ease-out hover:text-primary ${
+                          isActive 
+                            ? "text-primary tracking-[0.2em] font-normal" 
+                            : "text-foreground/40 hover:tracking-[0.22em]"
+                        }`}
+                        style={{
+                          textShadow: isActive ? "0 0 20px rgba(249, 115, 22, 0.25)" : "none"
+                        }}
+                      >
+                        {item.label}
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </nav>
+            </div>
+
+            {/* Bottom Mystical Details */}
+            <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row items-center justify-between border-t border-border/10 pt-8 text-[10px] tracking-[0.3em] uppercase text-muted-foreground/60 gap-4">
+              <motion.span 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6, duration: 2 }}
+              >
+                A generation set ablaze.
+              </motion.span>
+              <motion.span 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8, duration: 2 }}
+                className="hidden md:inline"
+              >
+                Let there be light
+              </motion.span>
+              <div className="flex gap-6">
+                <a href="#" className="hover:text-primary transition-colors duration-[1000ms]"><Instagram size={14} /></a>
+                <a href="#" className="hover:text-primary transition-colors duration-[1000ms]"><Youtube size={14} /></a>
+                <a href="#" className="hover:text-primary transition-colors duration-[1000ms]"><MessageCircle size={14} /></a>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Main Content Area with Slow Motion Fade & Blur */}
+      <main className="flex-1 pt-28 pb-12 z-[10] relative">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={pathname}
+            initial={{ opacity: 0, filter: "blur(12px)", y: 15 }}
+            animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+            exit={{ opacity: 0, filter: "blur(8px)", y: -10 }}
+            transition={{ duration: 2.2, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
-      <footer className="border-t border-border/40 mt-24">
+      {/* Immersive Faint Footer */}
+      <footer className="border-t border-border/10 mt-24 bg-background/20 backdrop-blur-md z-[10]">
         <div className="max-w-7xl mx-auto px-6 lg:px-10 py-16 grid gap-12 md:grid-cols-3">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <img src={logo} alt="" className="h-10 w-10 rounded-full" />
-              <span className="font-display text-xl">Youth on Fire</span>
+              <img src={logo} alt="" className="h-8 w-8 rounded-full border border-primary/20 opacity-60" />
+              <span className="font-display text-lg tracking-[0.15em] uppercase text-foreground/75">Youth on Fire</span>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
+            <p className="text-xs text-muted-foreground leading-relaxed max-w-xs tracking-wider">
               A generation set ablaze by the Spirit — pursuing Christ, building community, carrying the flame.
             </p>
           </div>
 
           <div>
-            <h4 className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4">Explore</h4>
-            <ul className="space-y-2 text-sm">
+            <h4 className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-4">Explorations</h4>
+            <ul className="space-y-2 text-xs">
               {nav.slice(1).map((n) => (
                 <li key={n.to}>
-                  <Link to={n.to} className="link-quiet text-foreground/70 hover:text-foreground">
+                  <Link to={n.to} className="link-quiet text-foreground/50 hover:text-foreground tracking-wider">
                     {n.label}
                   </Link>
                 </li>
@@ -120,19 +194,29 @@ export function Layout({ children }: { children: ReactNode }) {
             </ul>
           </div>
 
-          <div>
-            <h4 className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4">Follow the flame</h4>
-            <div className="flex gap-4 text-foreground/70">
-              <a href="#" aria-label="Instagram" className="hover:text-primary transition-colors duration-500"><Instagram size={20} /></a>
-              <a href="#" aria-label="YouTube" className="hover:text-primary transition-colors duration-500"><Youtube size={20} /></a>
-              <a href="#" aria-label="WhatsApp" className="hover:text-primary transition-colors duration-500"><MessageCircle size={20} /></a>
+          <div className="flex flex-col justify-between">
+            <div>
+              <h4 className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-4">Portals</h4>
+              <div className="flex gap-4 text-foreground/55">
+                <a href="#" className="hover:text-primary transition-colors duration-[1000ms]"><Instagram size={18} /></a>
+                <a href="#" className="hover:text-primary transition-colors duration-[1000ms]"><Youtube size={18} /></a>
+                <a href="#" className="hover:text-primary transition-colors duration-[1000ms]"><MessageCircle size={18} /></a>
+              </div>
             </div>
-            <p className="mt-6 text-xs text-muted-foreground">
-              © {new Date().getFullYear()} Youth on Fire Ministries. All rights reserved.
+            <p className="mt-6 text-[9px] tracking-[0.2em] uppercase text-muted-foreground/45">
+              © {new Date().getFullYear()} Youth on Fire.
             </p>
           </div>
         </div>
       </footer>
+
+      {/* Local keyframe stylesheet injection */}
+      <style>{`
+        @keyframes spinSlow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }
@@ -149,12 +233,12 @@ export function Section({
   className?: string;
 }) {
   return (
-    <section className={`max-w-7xl mx-auto px-6 lg:px-10 py-24 md:py-32 ${className}`}>
+    <section className={`max-w-7xl mx-auto px-6 lg:px-10 py-24 md:py-36 relative z-10 ${className}`}>
       {eyebrow && (
-        <p className="text-xs uppercase tracking-[0.3em] text-primary/80 mb-6">{eyebrow}</p>
+        <p className="text-[10px] uppercase tracking-[0.4em] text-primary/70 mb-6">{eyebrow}</p>
       )}
       {title && (
-        <h2 className="font-display text-4xl md:text-6xl text-balance max-w-3xl mb-12 leading-[1.05]">
+        <h2 className="font-display text-4xl md:text-6xl text-balance max-w-4xl mb-16 leading-[1.05] tracking-wide text-foreground/90 font-light">
           {title}
         </h2>
       )}
@@ -163,13 +247,14 @@ export function Section({
   );
 }
 
-export function FadeIn({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
+export function FadeIn({ children, delay = 0, className = "" }: { children: ReactNode; delay?: number; className?: string }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 1, delay, ease: [0.2, 0.8, 0.2, 1] }}
+      initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
+      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 1.8, delay, ease: [0.16, 1, 0.3, 1] }}
+      className={className}
     >
       {children}
     </motion.div>

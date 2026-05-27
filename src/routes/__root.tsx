@@ -107,13 +107,20 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+import { AtmosphericAudioProvider, CanvasEmbers, FluidCursor } from "@/components/Atmosphere";
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
-    </QueryClientProvider>
+    <AtmosphericAudioProvider>
+      <QueryClientProvider client={queryClient}>
+        <CanvasEmbers />
+        <FluidCursor />
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <Outlet />
+      </QueryClientProvider>
+    </AtmosphericAudioProvider>
   );
 }
+
