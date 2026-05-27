@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Layout, Section, FadeIn } from "@/components/Layout";
+import { Shell, Slow, Reveal } from "@/components/Layout";
 import community from "@/assets/community.jpg";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About — Youth on Fire Ministries" },
-      { name: "description", content: "Our vision, leadership and weekly rhythm. Discover the heart of Youth on Fire Ministries." },
+      { title: "Origin — Youth on Fire" },
+      { name: "description", content: "Where the fire began." },
     ],
   }),
   component: About,
@@ -14,77 +14,55 @@ export const Route = createFileRoute("/about")({
 
 function About() {
   return (
-    <Layout>
-      <Section eyebrow="About us" title="We exist to see a generation living unashamed of Jesus.">
-        <div className="grid md:grid-cols-2 gap-16 items-start">
-          <FadeIn>
-            <p className="text-foreground/75 leading-relaxed text-lg">
-              Youth on Fire Ministries is the youth department of our local church — a family of teenagers,
-              students and young adults learning what it means to follow Christ in this generation.
+    <Shell>
+      <section className="min-h-screen flex items-center px-6">
+        <div className="max-w-2xl mx-auto">
+          <Slow>
+            <p className="text-[10px] tracking-[0.4em] uppercase text-foreground/40 mb-12">— origin —</p>
+            <h1 className="font-display italic text-4xl md:text-6xl leading-[1.15] text-foreground/85 text-balance">
+              We did not begin with a name.
+              <br />
+              <span className="text-foreground/50">We began with a longing.</span>
+            </h1>
+          </Slow>
+        </div>
+      </section>
+
+      <section className="relative min-h-[90vh] flex items-end">
+        <div className="absolute inset-0">
+          <img src={community} alt="" loading="lazy" className="h-full w-full object-cover opacity-30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background" />
+        </div>
+        <div className="relative z-10 max-w-2xl mx-auto px-6 pb-32 w-full">
+          <Slow>
+            <p className="font-display italic text-xl md:text-2xl leading-relaxed text-foreground/70">
+              A small room. A few voices. A worn Bible left open on the table.
+              We sang quietly, because we were afraid of being heard.
+              Then, slowly, we stopped being afraid.
             </p>
-            <p className="mt-6 text-foreground/65 leading-relaxed">
-              We are not a program. We are a people — gathering weekly to worship, study the Word, pray,
-              and carry the gospel into our schools, workplaces, families and timelines.
-            </p>
-          </FadeIn>
-          <FadeIn delay={0.15}>
-            <div className="aspect-[4/5] rounded-md overflow-hidden">
-              <img src={community} alt="Our community" loading="lazy" className="h-full w-full object-cover" />
-            </div>
-          </FadeIn>
+          </Slow>
         </div>
-      </Section>
+      </section>
 
-      <Section eyebrow="Our convictions" title="What we stand for.">
-        <div className="grid md:grid-cols-2 gap-px bg-border/40 rounded-md overflow-hidden">
+      <section className="min-h-screen flex items-center px-6">
+        <div className="max-w-2xl mx-auto w-full space-y-20">
+          <Slow>
+            <p className="text-[10px] tracking-[0.4em] uppercase text-foreground/30">— what we believe, in fragments —</p>
+          </Slow>
           {[
-            ["Vision", "A Spirit-filled generation carrying revival fire into every sphere of life."],
-            ["Mission", "Make disciples who make disciples — rooted in the Word, led by the Spirit."],
-            ["Values", "Authenticity, holiness, family, prayer, mission."],
-            ["For who", "Teens (13+), students, young professionals — anyone hungry for more of God."],
-          ].map(([t, d]) => (
-            <div key={t} className="bg-background p-10">
-              <p className="text-xs uppercase tracking-[0.2em] text-primary/70 mb-4">{t}</p>
-              <p className="text-foreground/80 leading-relaxed">{d}</p>
-            </div>
+            { l: "the word", b: "Scripture is alive. It reads us back." },
+            { l: "the spirit", b: "Still moving. Still close. Not a memory." },
+            { l: "the table", b: "Open. To strangers. To the unsure. To you." },
+            { l: "the mission", b: "Carry the flame. Light another. Disappear." },
+          ].map((r, i) => (
+            <Slow key={r.l} delay={i * 0.15}>
+              <Reveal label={r.l}>{r.b}</Reveal>
+            </Slow>
           ))}
         </div>
-      </Section>
+      </section>
 
-      <Section eyebrow="Leadership" title="The team carrying this.">
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
-          {[
-            { n: "Pastor Daniel O.", r: "Youth Pastor" },
-            { n: "Sarah M.", r: "Discipleship Lead" },
-            { n: "Joseph K.", r: "Worship Lead" },
-          ].map((p) => (
-            <FadeIn key={p.n}>
-              <div className="group">
-                <div className="aspect-[4/5] rounded-md bg-card overflow-hidden mb-4 ember-glow" />
-                <p className="font-display text-xl">{p.n}</p>
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mt-1">{p.r}</p>
-              </div>
-            </FadeIn>
-          ))}
-        </div>
-      </Section>
-
-      <Section eyebrow="Weekly rhythm" title="When we gather.">
-        <ul className="divide-y divide-border/40 border-y border-border/40">
-          {[
-            ["Friday", "Youth Night", "6:30 PM"],
-            ["Sunday", "Main Service", "9:00 AM & 11:00 AM"],
-            ["Wednesday", "Prayer & Word", "6:00 PM"],
-            ["Saturday", "Small Groups", "Various locations"],
-          ].map(([d, n, t]) => (
-            <li key={d} className="grid grid-cols-3 py-6 group hover:px-4 transition-all duration-500">
-              <span className="text-xs uppercase tracking-[0.3em] text-primary/80 self-center">{d}</span>
-              <span className="font-display text-2xl">{n}</span>
-              <span className="text-foreground/60 text-sm self-center justify-self-end">{t}</span>
-            </li>
-          ))}
-        </ul>
-      </Section>
-    </Layout>
+      <div className="h-32" />
+    </Shell>
   );
 }
