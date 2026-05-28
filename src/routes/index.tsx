@@ -1,11 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   Search,
   User,
   Menu,
   X,
-  Star,
+  Flame,
   Clock,
   Calendar,
   Play,
@@ -16,26 +16,26 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "CINEMATIC — Step Through. Work Smarter." },
+      { title: "Youth on Fire — A generation set ablaze" },
       {
         name: "description",
         content:
-          "A voyage through forgotten realms, where past and future intertwine.",
+          "A movement of young people pursuing Christ together — worship, discipleship, prayer and mission.",
       },
     ],
   }),
-  component: CinematicHero,
+  component: YouthHero,
 });
 
-const NAV_LINKS = [
-  "Movies",
-  "TV Series",
-  "Editor's Pick",
-  "Interviews",
-  "User Reviews",
+const NAV_LINKS: { label: string; to: string }[] = [
+  { label: "About", to: "/about" },
+  { label: "Events", to: "/events" },
+  { label: "Sermons", to: "/sermons" },
+  { label: "Resources", to: "/resources" },
+  { label: "Gallery", to: "/gallery" },
 ];
 
-function CinematicHero() {
+function YouthHero() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -57,41 +57,45 @@ function CinematicHero() {
       <div className="relative z-10 flex h-full flex-col">
         {/* Navbar */}
         <nav className="relative z-50 flex items-center justify-between px-4 py-4 sm:px-6 md:px-12 md:py-6">
-          <div
-            className="animate-blur-fade-up h-8 md:h-10 flex items-center text-xl md:text-2xl font-bold tracking-[0.2em]"
+          <Link
+            to="/"
+            className="animate-blur-fade-up h-8 md:h-10 flex items-center gap-2 text-lg md:text-xl font-bold tracking-[0.2em]"
             style={{ animationDelay: "0ms" }}
           >
-            CINEMATIC
-          </div>
+            <Flame size={18} className="text-orange-400" />
+            YOUTH ON FIRE
+          </Link>
 
           <div className="hidden lg:flex items-center gap-8">
             {NAV_LINKS.map((link, i) => (
-              <a
-                key={link}
-                href="#"
+              <Link
+                key={link.label}
+                to={link.to}
                 className="animate-blur-fade-up text-sm transition-colors hover:text-gray-300"
                 style={{ animationDelay: `${100 + i * 50}ms` }}
               >
-                {link}
-              </a>
+                {link.label}
+              </Link>
             ))}
           </div>
 
           <div className="flex items-center gap-3">
-            <button
+            <Link
+              to="/contact"
               className="liquid-glass animate-blur-fade-up hidden sm:inline-flex items-center gap-2 rounded-full px-4 md:px-6 py-2 text-sm text-white"
               style={{ animationDelay: "350ms" }}
             >
               <Search size={18} />
-              <span>Search</span>
-            </button>
-            <button
+              <span>Contact</span>
+            </Link>
+            <Link
+              to="/contact"
               className="liquid-glass animate-blur-fade-up hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-full text-white"
               style={{ animationDelay: "400ms" }}
               aria-label="Profile"
             >
               <User size={18} />
-            </button>
+            </Link>
             <button
               className="liquid-glass animate-blur-fade-up lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-full text-white relative"
               style={{ animationDelay: "350ms" }}
@@ -130,28 +134,35 @@ function CinematicHero() {
         >
           <div className="flex flex-col p-4">
             {NAV_LINKS.map((link, i) => (
-              <a
-                key={link}
-                href="#"
+              <Link
+                key={link.label}
+                to={link.to}
+                onClick={() => setMenuOpen(false)}
                 className={`py-3 px-3 rounded-lg hover:bg-gray-800/50 transition-all duration-500 ease-out ${
                   menuOpen ? "translate-x-0 opacity-100" : "-translate-x-4 opacity-0"
                 }`}
                 style={{ transitionDelay: menuOpen ? `${i * 50}ms` : "0ms" }}
               >
-                {link}
-              </a>
+                {link.label}
+              </Link>
             ))}
             <div className="sm:hidden mt-3 pt-3 border-t border-gray-800 flex items-center gap-3">
-              <button className="liquid-glass flex-1 inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm">
+              <Link
+                to="/contact"
+                onClick={() => setMenuOpen(false)}
+                className="liquid-glass flex-1 inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm"
+              >
                 <Search size={18} />
-                <span>Search</span>
-              </button>
-              <button
+                <span>Contact</span>
+              </Link>
+              <Link
+                to="/contact"
+                onClick={() => setMenuOpen(false)}
                 className="liquid-glass inline-flex items-center justify-center w-10 h-10 rounded-full"
                 aria-label="Profile"
               >
                 <User size={18} />
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -165,16 +176,16 @@ function CinematicHero() {
                 style={{ animationDelay: "300ms" }}
               >
                 <span className="inline-flex items-center gap-2 font-medium">
-                  <Star size={16} className="fill-white sm:w-5 sm:h-5" />
-                  8.7/10 IMDB
+                  <Flame size={16} className="fill-orange-400 text-orange-400 sm:w-5 sm:h-5" />
+                  Youth on Fire Ministry
                 </span>
                 <span className="inline-flex items-center gap-2">
                   <Clock size={16} className="sm:w-5 sm:h-5" />
-                  132 min
+                  Fridays · 6:30pm
                 </span>
                 <span className="inline-flex items-center gap-2">
                   <Calendar size={16} className="sm:w-5 sm:h-5" />
-                  April, 2025
+                  Carriers Camp · Mar 14
                 </span>
               </div>
 
@@ -182,48 +193,53 @@ function CinematicHero() {
                 className="animate-blur-fade-up text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-normal mb-4 md:mb-6"
                 style={{ animationDelay: "400ms", letterSpacing: "-0.04em" }}
               >
-                Step Through. Work Smarter.
+                A generation set ablaze by the Spirit.
               </h1>
 
               <p
-                className="animate-blur-fade-up text-base sm:text-lg md:text-xl text-gray-400 mb-6 md:mb-12 max-w-2xl"
+                className="animate-blur-fade-up text-base sm:text-lg md:text-xl text-gray-300 mb-6 md:mb-12 max-w-2xl"
                 style={{ animationDelay: "500ms" }}
               >
-                A voyage through forgotten realms, where past and future intertwine.
+                We are a movement of young people pursuing Christ with all we are —
+                together in worship, discipleship, prayer and mission.
               </p>
 
               <div className="flex flex-wrap gap-3 sm:gap-4">
-                <button
+                <Link
+                  to="/contact"
                   className="animate-blur-fade-up inline-flex items-center gap-2 bg-white text-black rounded-full font-medium px-6 sm:px-8 py-2.5 sm:py-3 hover:bg-gray-200 transition-colors"
                   style={{ animationDelay: "600ms" }}
                 >
                   <Play size={18} className="fill-black" />
-                  Watch Now
-                </button>
-                <button
+                  Join the Community
+                </Link>
+                <Link
+                  to="/sermons"
                   className="liquid-glass animate-blur-fade-up inline-flex items-center rounded-full font-medium px-6 sm:px-8 py-2.5 sm:py-3 text-white"
                   style={{ animationDelay: "700ms" }}
                 >
-                  Learn More
-                </button>
+                  Watch Sermons
+                </Link>
               </div>
             </div>
 
             <div className="flex gap-3 self-start md:self-end">
-              <button
+              <Link
+                to="/events"
                 className="liquid-glass animate-blur-fade-up inline-flex items-center gap-2 rounded-full px-4 sm:px-6 py-2.5 sm:py-3 text-sm text-white"
                 style={{ animationDelay: "800ms" }}
               >
                 <ChevronLeft size={18} />
-                Previous
-              </button>
-              <button
+                Events
+              </Link>
+              <Link
+                to="/resources"
                 className="liquid-glass animate-blur-fade-up inline-flex items-center gap-2 rounded-full px-4 sm:px-6 py-2.5 sm:py-3 text-sm text-white"
                 style={{ animationDelay: "900ms" }}
               >
-                Next
+                Resources
                 <ChevronRight size={18} />
-              </button>
+              </Link>
             </div>
           </div>
         </div>
