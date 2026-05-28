@@ -74,10 +74,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Youth on Fire Ministries — A generation set ablaze" },
       { name: "description", content: "Youth on Fire Ministries — sermons, events, resources and community for a generation pursuing Christ." },
-      { property: "og:title", content: "Youth on Fire Ministries" },
-      { property: "og:description", content: "A generation set ablaze by the Spirit." },
+      { property: "og:title", content: "Youth on Fire Ministries — A generation set ablaze" },
+      { property: "og:description", content: "Youth on Fire Ministries — sermons, events, resources and community for a generation pursuing Christ." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Youth on Fire Ministries — A generation set ablaze" },
+      { name: "twitter:description", content: "Youth on Fire Ministries — sermons, events, resources and community for a generation pursuing Christ." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/aa6de34f-6ae4-41a3-a129-b6ba9df8ee89/id-preview-f17b92b3--93eb3f28-e344-4505-bbd5-a2dd694d1ee0.lovable.app-1779910846795.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/aa6de34f-6ae4-41a3-a129-b6ba9df8ee89/id-preview-f17b92b3--93eb3f28-e344-4505-bbd5-a2dd694d1ee0.lovable.app-1779910846795.png" },
     ],
     links: [
       {
