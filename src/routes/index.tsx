@@ -1,9 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { motion, AnimatePresence } from "motion/react";
-import { useState } from "react";
+import { motion } from "motion/react";
 import { ArrowUpRight, Flame, Play, Calendar } from "lucide-react";
 import { Layout, Section, FadeIn } from "@/components/Layout";
-import { useAtmosphericAudio } from "@/components/Atmosphere";
 import hero from "@/assets/hero.jpg";
 import community from "@/assets/community.jpg";
 import word from "@/assets/word.jpg";
@@ -20,84 +18,8 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const { startAudio } = useAtmosphericAudio();
-  const [entered, setEntered] = useState(false);
-  const [unlocking, setUnlocking] = useState(false);
-
-  const handleEnter = () => {
-    setUnlocking(true);
-    // Start synthesized ambient audio
-    startAudio();
-    
-    // Smooth transition delay matching particle expansion
-    setTimeout(() => {
-      setEntered(true);
-    }, 2200);
-  };
-
   return (
     <>
-      {/* 1. IMMERSIVE ENTRY THRESHOLD GATE */}
-      <AnimatePresence>
-        {!entered && (
-          <motion.div
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0, filter: "blur(30px)" }}
-            transition={{ duration: 2.2, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 z-[90] bg-background flex flex-col items-center justify-center pointer-events-auto select-none"
-          >
-            <div 
-              onClick={handleEnter}
-              className="flex flex-col items-center cursor-pointer group px-8 py-12"
-            >
-              {/* Pulsing Core Spark */}
-              <motion.div
-                animate={{
-                  scale: unlocking ? [1, 20] : [0.9, 1.15, 0.9],
-                  boxShadow: unlocking 
-                    ? [
-                        "0 0 20px rgba(249, 115, 22, 0.4)",
-                        "0 0 100px rgba(249, 115, 22, 0.8)",
-                        "0 0 300px rgba(249, 115, 22, 0)",
-                      ] 
-                    : [
-                        "0 0 15px rgba(249, 115, 22, 0.4)",
-                        "0 0 40px rgba(249, 115, 22, 0.7)",
-                        "0 0 15px rgba(249, 115, 22, 0.4)",
-                      ],
-                }}
-                transition={{
-                  scale: unlocking 
-                    ? { duration: 2.2, ease: [0.16, 1, 0.3, 1] } 
-                    : { repeat: Infinity, duration: 5, ease: "easeInOut" },
-                  boxShadow: unlocking 
-                    ? { duration: 2.2, ease: [0.16, 1, 0.3, 1] } 
-                    : { repeat: Infinity, duration: 5, ease: "easeInOut" },
-                }}
-                className={`w-3 h-3 rounded-full bg-primary mb-12 ${unlocking ? "pointer-events-none" : ""}`}
-              />
-              
-              {/* Invitation Whisper */}
-              <motion.p
-                animate={{
-                  opacity: unlocking ? 0 : [0.3, 0.85, 0.3],
-                  letterSpacing: unlocking ? "0.4em" : "0.25em",
-                }}
-                transition={{
-                  opacity: unlocking 
-                    ? { duration: 0.6 } 
-                    : { repeat: Infinity, duration: 5, ease: "easeInOut" },
-                  letterSpacing: { duration: 1.8, ease: "easeOut" },
-                }}
-                className="font-display text-sm tracking-[0.25em] text-foreground/70 lowercase text-center max-w-xs leading-relaxed"
-              >
-                {unlocking ? "igniting space..." : "step into the fire..."}
-              </motion.p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* 2. THE MAIN ATMOSPHERIC HOME CONTENT */}
       <Layout>
         {/* Hero Section with Slow Zoom & Blur */}
