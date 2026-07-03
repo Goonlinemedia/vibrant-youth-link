@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
 
 const navItems = [
-  { name: "Home", href: "/" },
   { name: "About", href: "/about" },
   { name: "Events", href: "/events" },
   { name: "Sermons", href: "/sermons" },
@@ -135,7 +134,7 @@ export function AnimatedNavFramer() {
               <Link
                 to={item.href}
                 activeProps={{ className: "text-primary!" }}
-                className="text-[10px] sm:text-xs font-medium text-foreground/60 hover:text-primary transition-colors px-2 py-1 uppercase tracking-wider"
+                className="text-[9px] min-[380px]:text-[10px] sm:text-xs font-semibold text-foreground/60 hover:text-primary transition-colors px-1.5 min-[380px]:px-2 py-1 uppercase tracking-wider"
               >
                 {item.name}
               </Link>
