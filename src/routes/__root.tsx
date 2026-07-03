@@ -98,6 +98,22 @@ function RootShell({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const theme = localStorage.getItem('theme') || 'light';
+                  if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
       </head>
       <body>
         {children}
@@ -108,19 +124,22 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 import { AtmosphericAudioProvider, CanvasEmbers, FluidCursor } from "@/components/Atmosphere";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
-    <AtmosphericAudioProvider>
-      <QueryClientProvider client={queryClient}>
-        <CanvasEmbers />
-        <FluidCursor />
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-      </QueryClientProvider>
-    </AtmosphericAudioProvider>
+    <ThemeProvider>
+      <AtmosphericAudioProvider>
+        <QueryClientProvider client={queryClient}>
+          <CanvasEmbers />
+          <FluidCursor />
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+        </QueryClientProvider>
+      </AtmosphericAudioProvider>
+    </ThemeProvider>
   );
 }
 

@@ -26,7 +26,7 @@ function Resources() {
         <div className="grid sm:grid-cols-2 gap-px bg-border/40 rounded-md overflow-hidden">
           {items.map((it, i) => (
             <FadeIn key={it.t} delay={i * 0.05}>
-              <div className="bg-background p-10 h-full group cursor-pointer hover:bg-card transition-colors duration-700">
+              <div className="bg-card/50 p-10 h-full group cursor-pointer hover:bg-card transition-colors duration-700">
                 <div className="flex items-start justify-between mb-8">
                   <it.i className="text-primary" size={28} />
                   <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">{it.tag}</span>

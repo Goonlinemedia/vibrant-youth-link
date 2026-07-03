@@ -1,9 +1,46 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Instagram, Youtube, MessageCircle } from "lucide-react";
+import { Instagram, Youtube, MessageCircle, Sun, Moon } from "lucide-react";
 import logo from "@/assets/logo.jpeg";
 import { AtmosphericSoundWave } from "@/components/Atmosphere";
+import { useTheme } from "@/components/ThemeProvider";
+import Footer4Col from "@/components/ui/footer-column";
+
+function ThemeToggle() {
+  const { theme, toggleTheme } = useTheme();
+
+  return (
+    <button
+      onClick={toggleTheme}
+      className="group flex items-center justify-center bg-background/40 hover:bg-background/80 border border-border/40 hover:border-primary/40 h-9 w-9 rounded-full transition-all duration-[1000ms] cursor-pointer relative overflow-hidden focus:outline-none"
+      title="Toggle light/dark theme"
+    >
+      <div className="relative w-4 h-4 flex items-center justify-center">
+        {/* Sun Icon */}
+        <span
+          className={`absolute transform transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+            theme === "light"
+              ? "rotate-0 scale-100 opacity-100"
+              : "-rotate-90 scale-50 opacity-0"
+          } text-primary`}
+        >
+          <Sun size={16} />
+        </span>
+        {/* Moon Icon */}
+        <span
+          className={`absolute transform transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+            theme === "dark"
+              ? "rotate-0 scale-100 opacity-100"
+              : "rotate-90 scale-50 opacity-0"
+          } text-primary`}
+        >
+          <Moon size={16} />
+        </span>
+      </div>
+    </button>
+  );
+}
 
 const nav = [
   { to: "/", label: "Home" },
@@ -30,15 +67,18 @@ export function Layout({ children }: { children: ReactNode }) {
               src={logo} 
               alt="Youth on Fire Ministries" 
               className="h-10 w-10 rounded-full object-cover border border-primary/20 opacity-70 group-hover:opacity-100 group-hover:border-primary/60 transition-all duration-[1000ms]" 
+              width={40}
+              height={40}
             />
             <span className="font-display text-lg tracking-[0.2em] text-foreground/60 group-hover:text-foreground/90 transition-all duration-[1000ms] uppercase hidden sm:block">
               Youth on Fire
             </span>
           </Link>
 
-          {/* Center Soundscape Wave Control */}
-          <div className="z-[110]">
+          {/* Center Soundscape Wave Control & Theme Toggle */}
+          <div className="z-[110] flex items-center gap-3">
             <AtmosphericSoundWave />
+            <ThemeToggle />
           </div>
 
           {/* Right Floating Cryptic Ember Key */}
@@ -168,47 +208,8 @@ export function Layout({ children }: { children: ReactNode }) {
         </AnimatePresence>
       </main>
 
-      {/* Immersive Faint Footer */}
-      <footer className="border-t border-border/10 mt-24 bg-background/20 backdrop-blur-md z-[10]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-16 grid gap-12 md:grid-cols-3">
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <img src={logo} alt="" className="h-8 w-8 rounded-full border border-primary/20 opacity-60" />
-              <span className="font-display text-lg tracking-[0.15em] uppercase text-foreground/75">Youth on Fire</span>
-            </div>
-            <p className="text-xs text-muted-foreground leading-relaxed max-w-xs tracking-wider">
-              A generation set ablaze by the Spirit — pursuing Christ, building community, carrying the flame.
-            </p>
-          </div>
-
-          <div>
-            <h4 className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-4">Explorations</h4>
-            <ul className="space-y-2 text-xs">
-              {nav.slice(1).map((n) => (
-                <li key={n.to}>
-                  <Link to={n.to} className="link-quiet text-foreground/50 hover:text-foreground tracking-wider">
-                    {n.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="flex flex-col justify-between">
-            <div>
-              <h4 className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-4">Portals</h4>
-              <div className="flex gap-4 text-foreground/55">
-                <a href="#" className="hover:text-primary transition-colors duration-[1000ms]"><Instagram size={18} /></a>
-                <a href="#" className="hover:text-primary transition-colors duration-[1000ms]"><Youtube size={18} /></a>
-                <a href="#" className="hover:text-primary transition-colors duration-[1000ms]"><MessageCircle size={18} /></a>
-              </div>
-            </div>
-            <p className="mt-6 text-[9px] tracking-[0.2em] uppercase text-muted-foreground/45">
-              © {new Date().getFullYear()} Youth on Fire.
-            </p>
-          </div>
-        </div>
-      </footer>
+      {/* Immersive 4-Column Footer */}
+      <Footer4Col />
 
       {/* Local keyframe stylesheet injection */}
       <style>{`

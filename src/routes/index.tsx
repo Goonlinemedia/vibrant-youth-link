@@ -28,11 +28,11 @@ function Home() {
             <img 
               src={hero} 
               alt="" 
-              className="h-full w-full object-cover opacity-45 scale-105 hover:scale-100 transition-transform duration-[6000ms] ease-[cubic-bezier(0.16,1,0.3,1)]" 
+              className="h-full w-full object-cover opacity-65 dark:opacity-45 scale-105 hover:scale-100 transition-transform duration-[6000ms] ease-[cubic-bezier(0.16,1,0.3,1)]" 
               width={1920} 
               height={1080} 
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/10" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-background/5 dark:from-background dark:via-background/70 dark:to-background/10" />
             <div className="absolute inset-0 ember-glow opacity-40" />
           </div>
 
@@ -97,9 +97,9 @@ function Home() {
                   src={event} 
                   alt="Youth conference" 
                   loading="lazy" 
-                  className="h-full w-full object-cover scale-100 group-hover:scale-105 transition-transform duration-[5000ms] ease-[cubic-bezier(0.16,1,0.3,1)] opacity-70 group-hover:opacity-95" 
+                  className="h-full w-full object-cover scale-100 group-hover:scale-105 transition-transform duration-[5000ms] ease-[cubic-bezier(0.16,1,0.3,1)] opacity-85 dark:opacity-70 group-hover:opacity-95" 
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent transition-opacity duration-[1500ms]" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/80 dark:from-background/90 via-background/15 dark:via-background/20 to-transparent transition-opacity duration-[1500ms]" />
                 <div className="absolute bottom-8 left-8 right-8 text-foreground">
                   <p className="text-[10px] uppercase tracking-[0.35em] text-primary/95 mb-2 font-semibold">Mar 14 – 17</p>
                   <p className="font-display text-4xl mt-2 tracking-wide font-light">Three nights. One fire.</p>
@@ -140,10 +140,10 @@ function Home() {
 
         {/* Scripture / Devotional with Misty Backing */}
         <section className="relative py-44 md:py-64 overflow-hidden z-10 border-t border-b border-border/5">
-          <div className="absolute inset-0 opacity-20">
-            <img src={word} alt="" loading="lazy" className="h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-background/85 backdrop-blur-md" />
-          </div>
+          <div className="absolute inset-0 opacity-35 dark:opacity-20">
+              <img src={word} alt="" loading="lazy" className="h-full w-full object-cover" />
+              <div className="absolute inset-0 bg-background/75 dark:bg-background/85 backdrop-blur-md" />
+            </div>
           <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
             <FadeIn>
               <p className="text-[10px] uppercase tracking-[0.45em] text-primary/70 mb-12">Word for the week</p>
@@ -183,9 +183,9 @@ function Home() {
                   src={community} 
                   alt="Latest message" 
                   loading="lazy" 
-                  className="h-full w-full object-cover opacity-50 scale-100 group-hover:scale-105 group-hover:opacity-85 transition-all duration-[4000ms] ease-[cubic-bezier(0.16,1,0.3,1)]" 
+                  className="h-full w-full object-cover opacity-80 dark:opacity-50 scale-100 group-hover:scale-105 group-hover:opacity-85 transition-all duration-[4000ms] ease-[cubic-bezier(0.16,1,0.3,1)]" 
                 />
-                <div className="absolute inset-0 bg-background/20 group-hover:bg-transparent transition-colors duration-[1500ms]" />
+                <div className="absolute inset-0 bg-background/10 dark:bg-background/20 group-hover:bg-transparent transition-colors duration-[1500ms]" />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="h-16 w-16 rounded-full bg-primary/95 shadow-[0_0_20px_rgba(249,115,22,0.35)] backdrop-blur flex items-center justify-center scale-95 group-hover:scale-105 group-hover:bg-primary transition-all duration-[1200ms] ease-[cubic-bezier(0.16,1,0.3,1)]">
                     <Play size={20} className="text-primary-foreground translate-x-0.5 fill-current" />

@@ -44,8 +44,8 @@ function Events() {
       <Section eyebrow="Events" title="Mark your calendar.">
         <FadeIn>
           <div className="relative rounded-md overflow-hidden">
-            <img src={event} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-60" />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-background/20" />
+            <img src={event} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-80 dark:opacity-60" />
+            <div className="absolute inset-0 bg-gradient-to-t from-background/90 dark:from-background via-background/40 dark:via-background/60 to-background/10 dark:to-background/20" />
             <div className="relative p-10 md:p-16 min-h-[420px] flex flex-col justify-end">
               <p className="text-xs uppercase tracking-[0.3em] text-primary/90">Featured · {featured.tag}</p>
               <h3 className="font-display text-4xl md:text-6xl mt-4 max-w-2xl">{featured.name}</h3>

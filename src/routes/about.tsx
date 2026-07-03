@@ -43,7 +43,7 @@ function About() {
             ["Values", "Authenticity, holiness, family, prayer, mission."],
             ["For who", "Teens (13+), students, young professionals — anyone hungry for more of God."],
           ].map(([t, d]) => (
-            <div key={t} className="bg-background p-10">
+            <div key={t} className="bg-card/50 p-10">
               <p className="text-xs uppercase tracking-[0.2em] text-primary/70 mb-4">{t}</p>
               <p className="text-foreground/80 leading-relaxed">{d}</p>
             </div>
