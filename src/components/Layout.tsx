@@ -1,11 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Instagram, Youtube, MessageCircle, Sun, Moon } from "lucide-react";
+import { Sun, Moon } from "lucide-react";
 import logo from "@/assets/logo.jpeg";
 import { AtmosphericSoundWave } from "@/components/Atmosphere";
 import { useTheme } from "@/components/ThemeProvider";
 import Footer4Col from "@/components/ui/footer-column";
+import { AnimatedNavFramer } from "@/components/ui/navigation-menu";
 
 function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
@@ -42,25 +43,29 @@ function ThemeToggle() {
   );
 }
 
-const nav = [
-  { to: "/", label: "Home" },
-  { to: "/about", label: "About" },
-  { to: "/events", label: "Events" },
-  { to: "/sermons", label: "Sermons" },
-  { to: "/resources", label: "Resources" },
-  { to: "/gallery", label: "Gallery" },
-  { to: "/contact", label: "Contact" },
-];
+
 
 export function Layout({ children }: { children: ReactNode }) {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div className="grain min-h-screen flex flex-col bg-background text-foreground relative overflow-hidden select-none">
       {/* Header bar */}
-      <header className="fixed top-0 inset-x-0 z-50 bg-transparent">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 h-24 flex items-center justify-between pointer-events-auto">
+      <header className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${
+        scrolled 
+          ? "bg-background/80 backdrop-blur-md border-b border-border/5 py-4" 
+          : "bg-transparent py-6"
+      }`}>
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between pointer-events-auto transition-all duration-500">
           {/* Logo & Brand */}
           <Link to="/" className="flex items-center gap-3 group z-[110]">
             <img 
@@ -75,123 +80,18 @@ export function Layout({ children }: { children: ReactNode }) {
             </span>
           </Link>
 
-          {/* Center Soundscape Wave Control & Theme Toggle */}
-          <div className="z-[110] flex items-center gap-3">
+          {/* Center Floating Navigation Menu */}
+          <AnimatedNavFramer />
+
+          {/* Right Floating Controls */}
+          <div className="z-[110] flex items-center gap-4">
             <AtmosphericSoundWave />
             <ThemeToggle />
           </div>
-
-          {/* Right Floating Cryptic Ember Key */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="relative z-[110] flex items-center gap-3 cursor-pointer group focus:outline-none"
-            aria-label="Toggle Portal"
-          >
-            <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground group-hover:text-primary transition-colors duration-[1000ms]">
-              {menuOpen ? "dissolve" : "portal"}
-            </span>
-            <div className="relative w-8 h-8 flex items-center justify-center">
-              {/* Spinning Outer Orbit Ring */}
-              <span
-                className={`absolute inset-0 rounded-full border border-primary/20 transition-all duration-[1500ms] group-hover:border-primary/50 ${
-                  menuOpen ? "rotate-180 border-accent/40 scale-110" : ""
-                }`}
-                style={{
-                  animation: "spinSlow 12s linear infinite",
-                }}
-              />
-              {/* Core glowing ember */}
-              <span
-                className={`w-2 h-2 rounded-full transition-all duration-[1200ms] ease-in-out ${
-                  menuOpen ? "bg-accent scale-125" : "bg-primary"
-                }`}
-                style={{
-                  boxShadow: menuOpen 
-                    ? "0 0 12px rgba(239, 68, 68, 0.8)" 
-                    : "0 0 8px rgba(249, 115, 22, 0.8)",
-                }}
-              />
-            </div>
-          </button>
         </div>
       </header>
 
-      {/* Cryptic Portal Navigation Overlay */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
-            animate={{ opacity: 1, backdropFilter: "blur(30px)" }}
-            exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
-            transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 z-[100] bg-background/95 flex flex-col justify-between p-10 md:p-16 select-none pointer-events-auto"
-          >
-            {/* Top Empty Space just to buffer layout */}
-            <div className="h-16" />
 
-            {/* Main Mystical Links */}
-            <div className="max-w-4xl mx-auto w-full flex flex-col justify-center items-center text-center flex-1">
-              <nav className="flex flex-col gap-6 md:gap-8">
-                {nav.map((item, i) => {
-                  const isActive = pathname === item.to;
-                  return (
-                    <motion.div
-                      key={item.to}
-                      initial={{ opacity: 0, y: 30, filter: "blur(10px)", letterSpacing: "-0.05em" }}
-                      animate={{ opacity: 1, y: 0, filter: "blur(0px)", letterSpacing: "0.15em" }}
-                      exit={{ opacity: 0, y: -20, filter: "blur(6px)", letterSpacing: "-0.05em" }}
-                      transition={{ 
-                        duration: 1.8, 
-                        delay: i * 0.08, 
-                        ease: [0.16, 1, 0.3, 1] 
-                      }}
-                    >
-                      <Link
-                        to={item.to}
-                        onClick={() => setMenuOpen(false)}
-                        className={`font-display text-4xl sm:text-5xl md:text-6xl uppercase font-light transition-all duration-[1200ms] ease-out hover:text-primary ${
-                          isActive 
-                            ? "text-primary tracking-[0.2em] font-normal" 
-                            : "text-foreground/40 hover:tracking-[0.22em]"
-                        }`}
-                        style={{
-                          textShadow: isActive ? "0 0 20px rgba(249, 115, 22, 0.25)" : "none"
-                        }}
-                      >
-                        {item.label}
-                      </Link>
-                    </motion.div>
-                  );
-                })}
-              </nav>
-            </div>
-
-            {/* Bottom Mystical Details */}
-            <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row items-center justify-between border-t border-border/10 pt-8 text-[10px] tracking-[0.3em] uppercase text-muted-foreground/60 gap-4">
-              <motion.span 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6, duration: 2 }}
-              >
-                A generation set ablaze.
-              </motion.span>
-              <motion.span 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8, duration: 2 }}
-                className="hidden md:inline"
-              >
-                Let there be light
-              </motion.span>
-              <div className="flex gap-6">
-                <a href="#" className="hover:text-primary transition-colors duration-[1000ms]"><Instagram size={14} /></a>
-                <a href="#" className="hover:text-primary transition-colors duration-[1000ms]"><Youtube size={14} /></a>
-                <a href="#" className="hover:text-primary transition-colors duration-[1000ms]"><MessageCircle size={14} /></a>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Main Content Area with Slow Motion Fade & Blur */}
       <main className="flex-1 pt-28 pb-12 z-[10] relative">
