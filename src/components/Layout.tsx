@@ -3,7 +3,7 @@ import { useState, useEffect, type ReactNode } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Sun, Moon } from "lucide-react";
 import logo from "@/assets/logo.jpeg";
-import { AtmosphericSoundWave } from "@/components/Atmosphere";
+
 import { useTheme } from "@/components/ThemeProvider";
 import Footer4Col from "@/components/ui/footer-column";
 import { AnimatedNavFramer } from "@/components/ui/navigation-menu";
@@ -85,7 +85,6 @@ export function Layout({ children }: { children: ReactNode }) {
 
           {/* Right Floating Controls */}
           <div className="z-[110] flex items-center gap-4">
-            <AtmosphericSoundWave />
             <ThemeToggle />
           </div>
         </div>
