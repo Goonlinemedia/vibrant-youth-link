@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SermonsRouteImport } from './routes/sermons'
 import { Route as ResourcesRouteImport } from './routes/resources'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as DemoRouteImport } from './routes/demo'
@@ -26,6 +27,11 @@ const SermonsRoute = SermonsRouteImport.update({
 const ResourcesRoute = ResourcesRouteImport.update({
   id: '/resources',
   path: '/resources',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GalleryRoute = GalleryRouteImport.update({
@@ -66,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/demo': typeof DemoRoute
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
+  '/register': typeof RegisterRoute
   '/resources': typeof ResourcesRoute
   '/sermons': typeof SermonsRoute
 }
@@ -76,6 +83,7 @@ export interface FileRoutesByTo {
   '/demo': typeof DemoRoute
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
+  '/register': typeof RegisterRoute
   '/resources': typeof ResourcesRoute
   '/sermons': typeof SermonsRoute
 }
@@ -87,6 +95,7 @@ export interface FileRoutesById {
   '/demo': typeof DemoRoute
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
+  '/register': typeof RegisterRoute
   '/resources': typeof ResourcesRoute
   '/sermons': typeof SermonsRoute
 }
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/demo'
     | '/events'
     | '/gallery'
+    | '/register'
     | '/resources'
     | '/sermons'
   fileRoutesByTo: FileRoutesByTo
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
     | '/demo'
     | '/events'
     | '/gallery'
+    | '/register'
     | '/resources'
     | '/sermons'
   id:
@@ -119,6 +130,7 @@ export interface FileRouteTypes {
     | '/demo'
     | '/events'
     | '/gallery'
+    | '/register'
     | '/resources'
     | '/sermons'
   fileRoutesById: FileRoutesById
@@ -130,6 +142,7 @@ export interface RootRouteChildren {
   DemoRoute: typeof DemoRoute
   EventsRoute: typeof EventsRoute
   GalleryRoute: typeof GalleryRoute
+  RegisterRoute: typeof RegisterRoute
   ResourcesRoute: typeof ResourcesRoute
   SermonsRoute: typeof SermonsRoute
 }
@@ -148,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/resources'
       fullPath: '/resources'
       preLoaderRoute: typeof ResourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/gallery': {
@@ -202,6 +222,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoRoute: DemoRoute,
   EventsRoute: EventsRoute,
   GalleryRoute: GalleryRoute,
+  RegisterRoute: RegisterRoute,
   ResourcesRoute: ResourcesRoute,
   SermonsRoute: SermonsRoute,
 }

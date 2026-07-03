@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Layout, Section, FadeIn } from "@/components/Layout";
 import { useEffect, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
@@ -77,23 +77,28 @@ function Events() {
             const d = new Date(e.date);
             return (
               <FadeIn key={e.name} delay={i * 0.05}>
-                <li className="grid grid-cols-12 gap-4 py-8 items-center group cursor-pointer hover:px-4 transition-all duration-700">
-                  <div className="col-span-3 md:col-span-2">
-                    <div className="font-display text-3xl md:text-4xl">{d.getDate()}</div>
-                    <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                      {d.toLocaleString("en", { month: "short" })}
+                <li className="list-none">
+                  <Link
+                    to="/register"
+                    className="grid grid-cols-12 gap-4 py-8 items-center group cursor-pointer hover:px-4 transition-all duration-700 w-full text-left"
+                  >
+                    <div className="col-span-3 md:col-span-2">
+                      <div className="font-display text-3xl md:text-4xl">{d.getDate()}</div>
+                      <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                        {d.toLocaleString("en", { month: "short" })}
+                      </div>
                     </div>
-                  </div>
-                  <div className="col-span-9 md:col-span-7">
-                    <p className="text-xs uppercase tracking-[0.2em] text-primary/70 mb-1">{e.tag}</p>
-                    <p className="font-display text-2xl md:text-3xl">{e.name}</p>
-                    <p className="text-sm text-muted-foreground mt-1">{e.place}</p>
-                  </div>
-                  <div className="hidden md:flex col-span-3 justify-end">
-                    <span className="inline-flex items-center gap-2 text-sm text-foreground/70 group-hover:text-primary transition-colors duration-700">
-                      Register <ArrowUpRight size={14} />
-                    </span>
-                  </div>
+                    <div className="col-span-9 md:col-span-7">
+                      <p className="text-xs uppercase tracking-[0.2em] text-primary/70 mb-1">{e.tag}</p>
+                      <p className="font-display text-2xl md:text-3xl">{e.name}</p>
+                      <p className="text-sm text-muted-foreground mt-1">{e.place}</p>
+                    </div>
+                    <div className="hidden md:flex col-span-3 justify-end">
+                      <span className="inline-flex items-center gap-2 text-sm text-foreground/70 group-hover:text-primary transition-colors duration-700">
+                        Register <ArrowUpRight size={14} />
+                      </span>
+                    </div>
+                  </Link>
                 </li>
               </FadeIn>
             );
