@@ -79,7 +79,7 @@ function Events() {
               <FadeIn key={e.name} delay={i * 0.05}>
                 <li className="list-none">
                   <Link
-                    to="/register"
+                    to="/contact"
                     className="grid grid-cols-12 gap-4 py-8 items-center group cursor-pointer hover:px-4 transition-all duration-700 w-full text-left"
                   >
                     <div className="col-span-3 md:col-span-2">

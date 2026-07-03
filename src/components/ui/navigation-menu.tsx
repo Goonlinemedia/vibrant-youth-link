@@ -11,7 +11,6 @@ const navItems = [
   { name: "Resources", href: "/resources" },
   { name: "Gallery", href: "/gallery" },
   { name: "Contact", href: "/contact" },
-  { name: "Register", href: "/register" },
 ];
 
 const EXPAND_SCROLL_THRESHOLD = 80;
