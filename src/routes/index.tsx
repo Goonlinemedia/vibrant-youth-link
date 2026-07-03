@@ -28,7 +28,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Youth on Fire Ministries — Welcome Home" },
-      { name: "description", content: "Sunday Worship • 9:00 AM & 11:00 AM. Grow in faith, build relationships, and experience God's love." },
+      { name: "description", content: "Sunday Worship • 8:00 AM. Grow in faith, build relationships, and experience God's love." },
     ],
   }),
   component: Home,
@@ -80,7 +80,7 @@ function Home() {
               transition={{ duration: 1.8, delay: 0.9 }}
               className="mt-6 max-w-xl text-base sm:text-lg md:text-xl text-white/90 font-medium leading-relaxed [text-shadow:0_2px_10px_rgba(0,0,0,0.4)]"
             >
-              A place to grow in faith, build meaningful relationships, and experience God's love.
+              We are a new brigade with passion for Christ and His people, to make disciples of all nations.
             </motion.p>
 
             <motion.div
@@ -89,7 +89,7 @@ function Home() {
               transition={{ duration: 1.8, delay: 1.2 }}
               className="mt-8 inline-flex items-center gap-2 text-primary font-bold uppercase tracking-wider text-xs bg-black/40 px-4 py-2 rounded-lg border border-primary/20 backdrop-blur-sm"
             >
-              <Clock size={12} /> Sunday Worship • 9:00 AM & 11:00 AM
+              <Clock size={12} /> Sunday Worship • 8:00 AM
             </motion.div>
 
             <motion.div
@@ -144,7 +144,7 @@ function Home() {
                   <p className="text-xs text-muted-foreground leading-relaxed">
                     Join us in the main sanctuary for vibrant worship, community connection, and solid biblical teaching.
                   </p>
-                  <p className="font-semibold text-sm text-foreground">9:00 AM & 11:00 AM</p>
+                  <p className="font-semibold text-sm text-foreground">8:00 AM</p>
                 </div>
               </FadeIn>
 
@@ -157,7 +157,7 @@ function Home() {
                   <p className="text-xs text-muted-foreground leading-relaxed">
                     A midweek recharge for prayers, youth gatherings, cell groups, and direct interactive discipleship study.
                   </p>
-                  <p className="font-semibold text-sm text-foreground">Wednesday at 6:30 PM</p>
+                  <p className="font-semibold text-sm text-foreground">Wednesday at 6:00 PM</p>
                 </div>
               </FadeIn>
 
@@ -168,7 +168,7 @@ function Home() {
                   </div>
                   <h3 className="font-display text-2xl font-light">Our Address</h3>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    12 Revival Avenue, City Center.<br />
+                    2 Archbishop Ademowo Crescent, Off Ago Palace Way, Okota (Near Forte Oil Station), Lagos, Nigeria.<br />
                     Directions, transit info, and parking details are available.
                   </p>
                   <Link 
@@ -527,8 +527,8 @@ function Home() {
                     Have questions about gatherings, prayer requests, or transportation? Let us help you plan your visit.
                   </p>
                   <div className="space-y-4 pt-4 text-xs text-foreground/80">
-                    <p className="flex items-center gap-2">
-                      <MapPin size={14} className="text-primary" /> 12 Revival Avenue, City Center
+                    <p className="flex items-center gap-2 leading-relaxed">
+                      <MapPin size={14} className="text-primary shrink-0 mt-0.5" /> 2 Archbishop Ademowo Crescent, Off Ago Palace Way, Okota (Near Forte Oil Station), Lagos, Nigeria
                     </p>
                     <p className="flex items-center gap-2">
                       <Mail size={14} className="text-primary" /> hello@youthonfire.org

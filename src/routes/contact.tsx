@@ -380,8 +380,8 @@ function Contact() {
                     <MapPin className="text-primary size-5 shrink-0 mt-0.5" />
                     <div>
                       <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Location</p>
-                      <p className="font-display text-lg leading-relaxed mt-1">
-                        Main Auditorium<br />12 Revival Avenue, City Center
+                      <p className="font-display text-base leading-relaxed mt-1">
+                        Main Auditorium<br />2 Archbishop Ademowo Crescent, Off Ago Palace Way, Okota (Near Forte Oil Station), Lagos, Nigeria
                       </p>
                     </div>
                   </div>
@@ -392,8 +392,8 @@ function Contact() {
                     <div>
                       <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Gathering Times</p>
                       <p className="text-xs leading-relaxed text-foreground/80 mt-1">
-                        Friday Youth Night — 6:30 PM<br />
-                        Sunday Service — 9:00 AM & 11:00 AM
+                        Sunday Service — 8:00 AM<br />
+                        Wednesday Fellowship — 6:00 PM
                       </p>
                     </div>
                   </div>
