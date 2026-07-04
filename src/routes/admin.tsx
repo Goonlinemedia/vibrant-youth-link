@@ -19,16 +19,17 @@ import {
   defaultResources,
   defaultBooks,
   defaultRhythms,
-  defaultTeam
+  defaultTeam,
+  defaultGallery
 } from "@/lib/firebase";
 import { useFirestoreCollection } from "@/hooks/useFirestoreCollection";
-import { Plus, Edit2, Trash2, LogOut, CheckCircle, AlertCircle, RefreshCw } from "lucide-react";
+import { Plus, Edit2, Trash2, LogOut, CheckCircle, AlertCircle, RefreshCw, Mail, Phone, Clock, Users, MapPin } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
       { title: "Admin Portal — Youth on Fire" },
-      { name: "description", content: "Manage sermons, events, resources, rhythms, and team." },
+      { name: "description", content: "Manage sermons, events, resources, rhythms, team, and photo gallery." },
     ],
   }),
   component: AdminPortal,
@@ -50,9 +51,13 @@ function AdminPortal() {
   const books = useFirestoreCollection("recommended_books", defaultBooks) as any[];
   const rhythms = useFirestoreCollection("weekly_rhythm", defaultRhythms) as any[];
   const team = useFirestoreCollection("leadership_team", defaultTeam) as any[];
+  const gallery = useFirestoreCollection("gallery", defaultGallery) as any[];
+  const registrations = useFirestoreCollection("registrations", []) as any[];
 
-  // Form states
-  const [activeTab, setActiveTab] = useState<"sermons" | "events" | "resources" | "rhythms" | "team">("sermons");
+  // Tab state
+  const [activeTab, setActiveTab] = useState<
+    "sermons" | "events" | "resources" | "rhythms" | "team" | "gallery" | "registrations"
+  >("sermons");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
 
@@ -63,6 +68,7 @@ function AdminPortal() {
   const [bookForm, setBookForm] = useState({ title: "", author: "" });
   const [rhythmForm, setRhythmForm] = useState({ day: "Friday", name: "", time: "" });
   const [teamForm, setTeamForm] = useState({ name: "", role: "" });
+  const [galleryForm, setGalleryForm] = useState({ thumb: "", full: "" });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -123,6 +129,7 @@ function AdminPortal() {
     if (activeTab === "resources") setResourceForm({ t: item.t, d: item.d, tag: item.tag, icon: item.icon || "BookOpen" });
     if (activeTab === "rhythms") setRhythmForm({ day: item.day, name: item.name, time: item.time });
     if (activeTab === "team") setTeamForm({ name: item.name, role: item.role });
+    if (activeTab === "gallery") setGalleryForm({ thumb: item.thumb, full: item.full });
   };
 
   const resetForms = () => {
@@ -134,6 +141,7 @@ function AdminPortal() {
     setBookForm({ title: "", author: "" });
     setRhythmForm({ day: "Friday", name: "", time: "" });
     setTeamForm({ name: "", role: "" });
+    setGalleryForm({ thumb: "", full: "" });
   };
 
   // Submit edits or adds
@@ -179,6 +187,14 @@ function AdminPortal() {
         } else {
           await addFirestoreDoc("leadership_team", teamForm);
           triggerResetSuccess("Team member added successfully!");
+        }
+      } else if (activeTab === "gallery") {
+        if (editingId) {
+          await updateFirestoreDoc("gallery", editingId, galleryForm);
+          triggerResetSuccess("Gallery photo updated successfully!");
+        } else {
+          await addFirestoreDoc("gallery", galleryForm);
+          triggerResetSuccess("Gallery photo added successfully!");
         }
       }
       resetForms();
@@ -339,7 +355,9 @@ function AdminPortal() {
               { id: "events", label: "Events" },
               { id: "resources", label: "Resources" },
               { id: "rhythms", label: "Weekly rhythms" },
-              { id: "team", label: "Leadership" }
+              { id: "team", label: "Leadership" },
+              { id: "gallery", label: "Photo Gallery" },
+              { id: "registrations", label: "Registrations" }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -394,6 +412,12 @@ function AdminPortal() {
                 className="w-full flex items-center justify-between px-4 py-2 text-[10px] text-muted-foreground hover:text-primary transition-all border border-dashed border-border/35 rounded hover:border-primary/45 cursor-pointer uppercase font-mono"
               >
                 Seed Leaders <RefreshCw size={10} />
+              </button>
+              <button
+                onClick={() => handleSeedDefaults("gallery", defaultGallery)}
+                className="w-full flex items-center justify-between px-4 py-2 text-[10px] text-muted-foreground hover:text-primary transition-all border border-dashed border-border/35 rounded hover:border-primary/45 cursor-pointer uppercase font-mono"
+              >
+                Seed Gallery <RefreshCw size={10} />
               </button>
             </div>
           </div>
@@ -654,6 +678,34 @@ function AdminPortal() {
                     </div>
                   )}
 
+                  {/* Photo Gallery Fields */}
+                  {activeTab === "gallery" && (
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Thumbnail Path/URL</label>
+                        <input
+                          type="text"
+                          required
+                          value={galleryForm.thumb}
+                          onChange={(e) => setGalleryForm({ ...galleryForm, thumb: e.target.value })}
+                          placeholder="/gallery/g1.jpg | https://url"
+                          className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">High-Res / Full-Size URL</label>
+                        <input
+                          type="text"
+                          required
+                          value={galleryForm.full}
+                          onChange={(e) => setGalleryForm({ ...galleryForm, full: e.target.value })}
+                          placeholder="/gallery/g1_full.jpg | https://url"
+                          className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                        />
+                      </div>
+                    </div>
+                  )}
+
                   <div className="flex gap-3 justify-end pt-4 border-t border-border/5">
                     <button
                       type="button"
@@ -672,19 +724,25 @@ function AdminPortal() {
                 </form>
               </div>
             ) : (
-              <div className="flex justify-between items-center bg-card/30 border border-border/10 p-4 rounded-xl">
-                <p className="text-xs text-muted-foreground">Manage your list of items or add a new record.</p>
-                {activeTab !== "resources" ? (
-                  <button
-                    onClick={() => setShowForm(true)}
-                    className="flex items-center gap-1.5 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-primary/95 transition-all cursor-pointer"
-                  >
-                    <Plus size={14} /> Add Item
-                  </button>
-                ) : (
-                  <div className="text-xs text-muted-foreground">Add resources below (books have a separate form)</div>
-                )}
-              </div>
+              activeTab !== "registrations" ? (
+                <div className="flex justify-between items-center bg-card/30 border border-border/10 p-4 rounded-xl">
+                  <p className="text-xs text-muted-foreground">Manage your list of items or add a new record.</p>
+                  {activeTab !== "resources" ? (
+                    <button
+                      onClick={() => setShowForm(true)}
+                      className="flex items-center gap-1.5 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-primary/95 transition-all cursor-pointer"
+                    >
+                      <Plus size={14} /> Add Item
+                    </button>
+                  ) : (
+                    <div className="text-xs text-muted-foreground">Add resources below (books have a separate form)</div>
+                  )}
+                </div>
+              ) : (
+                <div className="bg-card/30 border border-border/10 p-4 rounded-xl text-xs text-muted-foreground">
+                  User registrations submitted on the Contact page. Database items update in real time.
+                </div>
+              )
             )}
 
             {/* List & Edit existing items in the current collection */}
@@ -697,6 +755,8 @@ function AdminPortal() {
                   {activeTab === "resources" && `${resources.length} resources, ${books.length} books`}
                   {activeTab === "rhythms" && `${rhythms.length} rhythm nodes`}
                   {activeTab === "team" && `${team.length} leaders`}
+                  {activeTab === "gallery" && `${gallery.length} photos`}
+                  {activeTab === "registrations" && `${registrations.length} registrations`}
                 </span>
               </div>
 
@@ -849,6 +909,107 @@ function AdminPortal() {
                       </div>
                     </div>
                   ))}
+                </div>
+              )}
+
+              {/* GALLERY LISTING */}
+              {activeTab === "gallery" && (
+                <div className="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-[60vh] overflow-y-auto">
+                  {gallery.map((tile, i) => (
+                    <div key={tile.id || i} className="group relative border border-border/10 rounded-lg overflow-hidden bg-card aspect-square">
+                      <img src={tile.thumb} alt="" className="w-full h-full object-cover opacity-80" />
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-all">
+                        <button
+                          onClick={() => startEdit(tile)}
+                          className="bg-primary/95 text-primary-foreground p-2 rounded hover:scale-105 transition-all cursor-pointer"
+                          title="Edit link"
+                        >
+                          <Edit2 size={12} />
+                        </button>
+                        {tile.id && (
+                          <button
+                            onClick={() => handleDeleteItem("gallery", tile.id)}
+                            className="bg-destructive/95 text-destructive-foreground p-2 rounded hover:scale-105 transition-all cursor-pointer"
+                            title="Delete picture"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* REGISTRATIONS LISTING */}
+              {activeTab === "registrations" && (
+                <div className="p-4 space-y-4 max-h-[70vh] overflow-y-auto bg-card/20">
+                  {registrations.length === 0 ? (
+                    <p className="text-xs text-muted-foreground text-center py-10">No registrations found in the database.</p>
+                  ) : (
+                    registrations.map((reg) => (
+                      <div key={reg.id} className="bg-card/65 border border-border/10 p-5 rounded-xl space-y-4 hover:border-primary/20 transition-all">
+                        <div className="flex justify-between items-start border-b border-border/5 pb-2">
+                          <div>
+                            <h5 className="font-semibold text-foreground text-base">{reg.name}</h5>
+                            <p className="text-[10px] text-primary/80 uppercase tracking-wider font-mono mt-0.5">
+                              {reg.ageRange ? `${reg.ageRange} years` : "Age N/A"} · {reg.gender || "Gender N/A"}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => handleDeleteItem("registrations", reg.id)}
+                            className="text-muted-foreground hover:text-destructive p-1 border border-border/20 hover:border-destructive/30 rounded transition-all cursor-pointer"
+                            title="Delete record"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-4 text-xs">
+                          {/* Contact Details */}
+                          <div className="space-y-2">
+                            <p className="flex items-center gap-2 text-muted-foreground">
+                              <Mail size={12} className="text-primary shrink-0" />
+                              <a href={`mailto:${reg.email}`} className="hover:underline hover:text-foreground">{reg.email}</a>
+                            </p>
+                            <p className="flex items-center gap-2 text-muted-foreground">
+                              <Phone size={12} className="text-primary shrink-0" />
+                              <a href={`tel:${reg.phone}`} className="hover:underline hover:text-foreground">{reg.phone}</a>
+                            </p>
+                            <p className="flex items-center gap-2 text-muted-foreground">
+                              <Clock size={12} className="text-primary shrink-0" />
+                              <span>Registered: {reg.createdAt ? new Date(reg.createdAt).toLocaleString() : "Date N/A"}</span>
+                            </p>
+                          </div>
+
+                          {/* Attendance Info */}
+                          <div className="space-y-2 border-t md:border-t-0 md:border-l border-border/10 pt-2 md:pt-0 md:pl-4">
+                            <p className="text-muted-foreground">
+                              First Time? <strong className="text-foreground">{reg.isFirstTime || "Unknown"}</strong>
+                            </p>
+                            <p className="text-muted-foreground flex items-center gap-1.5 flex-wrap">
+                              <MapPin size={12} className="text-primary shrink-0" />
+                              Transport Required? <strong className="text-foreground">{reg.requireTransportation || "No"}</strong>
+                              {reg.pickupLocation && <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-medium">{reg.pickupLocation}</span>}
+                            </p>
+                            <p className="text-muted-foreground flex items-center gap-1.5">
+                              <Users size={12} className="text-primary shrink-0" />
+                              Bringing Friends? <strong className="text-foreground">{reg.withFriends || "No"}</strong>
+                              {reg.friendCount && <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-medium">{reg.friendCount} friend(s)</span>}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Prayer / Expectations text block */}
+                        {reg.expectations && (
+                          <div className="bg-card/40 border border-border/5 p-3 rounded-lg text-xs leading-relaxed text-foreground/80 space-y-1">
+                            <p className="text-[10px] uppercase tracking-wider text-primary/80 font-bold font-mono">Prayer expectations / Requests:</p>
+                            <p>{reg.expectations}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  )}
                 </div>
               )}
             </div>

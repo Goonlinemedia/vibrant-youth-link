@@ -3,12 +3,8 @@ import { Layout, Section, FadeIn } from "@/components/Layout";
 import { useState } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "motion/react";
-
-// Generate paths dynamically for all 55 gallery images in the public folder
-const tiles = Array.from({ length: 55 }, (_, i) => ({
-  thumb: `/gallery/g${i + 1}.jpg`,
-  full: `/gallery/g${i + 1}_full.jpg`
-}));
+import { useFirestoreCollection } from "@/hooks/useFirestoreCollection";
+import { defaultGallery } from "@/lib/firebase";
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
@@ -21,6 +17,7 @@ export const Route = createFileRoute("/gallery")({
 });
 
 function Gallery() {
+  const tiles = useFirestoreCollection("gallery", defaultGallery);
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
 
   return (

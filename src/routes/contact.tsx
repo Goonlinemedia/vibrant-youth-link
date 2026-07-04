@@ -3,6 +3,7 @@ import { Layout, Section, FadeIn } from "@/components/Layout";
 import { MessageCircle, Instagram, Youtube, MapPin, Clock, Mail, CheckCircle } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { addFirestoreDoc } from "@/lib/firebase";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/contact")({
 
 function Contact() {
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -41,9 +43,20 @@ function Contact() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setSubmitting(true);
+    try {
+      await addFirestoreDoc("registrations", {
+        ...form,
+        createdAt: new Date().toISOString(),
+      });
+      setSubmitted(true);
+    } catch (err: any) {
+      alert("Error submitting registration: " + err.message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -304,9 +317,10 @@ function Contact() {
 
                       <button
                         type="submit"
-                        className="w-full bg-primary text-primary-foreground py-4 rounded-full text-xs font-semibold uppercase tracking-widest hover:bg-primary/90 transition-all duration-[1000ms] shadow-[0_0_20px_rgba(249,115,22,0.15)] hover:shadow-[0_0_30px_rgba(249,115,22,0.3)] cursor-pointer"
+                        disabled={submitting}
+                        className="w-full bg-primary text-primary-foreground py-4 rounded-full text-xs font-semibold uppercase tracking-widest hover:bg-primary/90 transition-all duration-[1000ms] shadow-[0_0_20px_rgba(249,115,22,0.15)] hover:shadow-[0_0_30px_rgba(249,115,22,0.3)] cursor-pointer disabled:opacity-55 disabled:cursor-not-allowed"
                       >
-                        Register Now
+                        {submitting ? "Registering..." : "Register Now"}
                       </button>
                     </form>
                   </div>

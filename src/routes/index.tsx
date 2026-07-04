@@ -65,26 +65,8 @@ import tile16Full from "@/assets/tile16_full.jpg";
 import tile17Full from "@/assets/tile17_full.jpg";
 import tile18Full from "@/assets/tile18_full.jpg";
 
-const tiles = [
-  { thumb: tile1, full: tile1Full },
-  { thumb: tile2, full: tile2Full },
-  { thumb: tile3, full: tile3Full },
-  { thumb: tile4, full: tile4Full },
-  { thumb: tile5, full: tile5Full },
-  { thumb: tile6, full: tile6Full },
-  { thumb: tile7, full: tile7Full },
-  { thumb: tile8, full: tile8Full },
-  { thumb: tile9, full: tile9Full },
-  { thumb: tile10, full: tile10Full },
-  { thumb: tile11, full: tile11Full },
-  { thumb: tile12, full: tile12Full },
-  { thumb: tile13, full: tile13Full },
-  { thumb: tile14, full: tile14Full },
-  { thumb: tile15, full: tile15Full },
-  { thumb: tile16, full: tile16Full },
-  { thumb: tile17, full: tile17Full },
-  { thumb: tile18, full: tile18Full }
-];
+import { useFirestoreCollection } from "@/hooks/useFirestoreCollection";
+import { defaultGallery } from "@/lib/firebase";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -97,6 +79,8 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  const gallery = useFirestoreCollection("gallery", defaultGallery);
+  const tiles = gallery.slice(0, 18);
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
 
   return (

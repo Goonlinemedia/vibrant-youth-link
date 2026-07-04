@@ -53,6 +53,11 @@ export function getResourceIcon(iconName: string) {
 }
 
 // Database Defaults (Fallback and Seeding)
+export const defaultGallery = Array.from({ length: 55 }, (_, i) => ({
+  thumb: `/gallery/g${i + 1}.jpg`,
+  full: `/gallery/g${i + 1}_full.jpg`
+}));
+
 export const defaultSermons = [
   { t: "When the fire fell", p: "Pastor Daniel", c: "Faith", len: "42m", img: "community" },
   { t: "Designed for purpose", p: "Sarah M.", c: "Purpose", len: "36m", img: "word" },
