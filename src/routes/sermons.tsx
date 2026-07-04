@@ -18,11 +18,19 @@ export const Route = createFileRoute("/sermons")({
 const categories = ["All", "Faith", "Relationships", "Purpose", "Leadership", "Prayer"] as const;
 
 function Sermons() {
-  const sermons = useFirestoreCollection("sermons", defaultSermons);
+  const sermons = useFirestoreCollection("sermons", defaultSermons) as any[];
+
+  // Sort sermons chronologically (newest first)
+  const sortedSermons = [...sermons].sort((a, b) => {
+    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+    return dateB - dateA;
+  });
+
   const [cat, setCat] = useState<(typeof categories)[number]>("All");
   const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
 
-  const list = cat === "All" ? sermons : sermons.filter((s) => s.c === cat);
+  const list = cat === "All" ? sortedSermons : sortedSermons.filter((s) => s.c === cat);
 
   const getYouTubeId = (url: string) => {
     if (!url) return null;

@@ -86,9 +86,16 @@ function Home() {
   const configs = useFirestoreCollection("homepage_config", defaultHomepageConfigsArray);
   const config = configs[0] || defaultHomepageConfig;
   const sermons = useFirestoreCollection("sermons", defaultSermons);
-  const latestSermon = sermons[0] || defaultSermons[0];
+  
+  // Sort sermons chronologically (newest first)
+  const sortedSermons = [...sermons].sort((a, b) => {
+    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+    return dateB - dateA;
+  });
+
+  const latestSermon = sortedSermons[0] || defaultSermons[0];
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
-  const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
 
   const getYouTubeId = (url: string) => {
     if (!url) return null;
@@ -105,17 +112,6 @@ function Home() {
       }
     }
     return resolveImage(sermon?.img || "community");
-  };
-
-  const handleSermonClick = (sermon: any) => {
-    if (sermon && sermon.videoUrl) {
-      const id = getYouTubeId(sermon.videoUrl);
-      if (id) {
-        setActiveVideoUrl(sermon.videoUrl);
-        return;
-      }
-    }
-    window.open("https://www.youtube.com/@overcomersgrace/videos", "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -303,6 +299,69 @@ function Home() {
         </section>
 
 
+
+        {/* 5. UPCOMING EVENTS (Spotted Feature Camp details) - BG: Soft Slate Gray */}
+        <section className="py-24 bg-slate-50/50 dark:bg-zinc-900/20 border-y border-border/5">
+          <div className="max-w-7xl mx-auto px-6 lg:px-10">
+            <div className="grid md:grid-cols-2 gap-16 items-center">
+              <FadeIn>
+                <div className="relative aspect-[4/5] rounded-2xl overflow-hidden group border border-border/10 shadow-md">
+                  <img 
+                    src={resolveImage(config.featured_event_image || "event")} 
+                    alt="Youth conference spotlight" 
+                    loading="lazy" 
+                    className="h-full w-full object-cover scale-100 group-hover:scale-103 transition-transform duration-[5000ms] opacity-90 dark:opacity-75" 
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+                  <div className="absolute bottom-8 left-8 right-8 text-white z-10">
+                    <p className="text-[10px] uppercase tracking-[0.35em] text-primary mb-2 font-bold">{config.featured_event_tag || "Mar 14 – 17"}</p>
+                    <h3 className="font-display text-3xl font-light tracking-wide">{config.featured_event_title}</h3>
+                    <p className="text-xs text-white/80 mt-2 font-light">{config.featured_event_place}</p>
+                  </div>
+                </div>
+              </FadeIn>
+              
+              <FadeIn delay={0.25}>
+                <div className="space-y-8 max-w-lg">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">Gathering Spotlight</p>
+                  <h2 className="font-display text-4xl font-light tracking-wide text-foreground">
+                    {config.featured_event_title ? config.featured_event_title.split(" — ")[0] : "Carriers Camp"}
+                  </h2>
+                  <p className="text-foreground/75 leading-relaxed text-sm md:text-base font-light">
+                    {config.featured_event_place}
+                  </p>
+                  <ul className="space-y-4 text-xs text-foreground/60 border-t border-border/10 pt-8 tracking-wider">
+                    {[
+                      [config.featured_event_bullet1_title || "Worship Nights", config.featured_event_bullet1_desc || "Live from the main sanctuary"],
+                      [config.featured_event_bullet2_title || "Discipleship Guilds", config.featured_event_bullet2_desc || "Identity, calling, pure pursuit"],
+                      [config.featured_event_bullet3_title || "City Outreach", config.featured_event_bullet3_desc || "Bring the light out of the room"],
+                    ].map(([k, v]) => (
+                      <li key={k} className="flex justify-between gap-4 py-1 border-b border-border/5">
+                        <span className="text-foreground/80 font-semibold">{k}</span>
+                        <span>{v}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="pt-4 flex items-center gap-6">
+                    <Link
+                      to="/contact"
+                      className="bg-primary text-primary-foreground px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider hover:bg-primary/90 transition-all duration-500 shadow-md cursor-pointer"
+                    >
+                      Register Now
+                    </Link>
+                    <Link
+                      to="/events"
+                      className="link-quiet inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary font-semibold"
+                    >
+                      See All Events <Calendar size={12} className="ml-1" />
+                    </Link>
+                  </div>
+                </div>
+              </FadeIn>
+            </div>
+          </div>
+        </section>
+
         {/* 3. ABOUT THE CHURCH (Warm Congregation Photo & Expectation Block) - BG: Soft Cream */}
         <section className="py-24 bg-[#fdfaf4] dark:bg-[#12100d] border-y border-border/5">
           <div className="max-w-7xl mx-auto px-6 lg:px-10">
@@ -357,7 +416,6 @@ function Home() {
             </div>
           </div>
         </section>
-
 
         {/* 4. OUR MINISTRIES (Grid of Beautiful Icons & Cards) - BG: White */}
         <section className="py-24 bg-background">
@@ -429,76 +487,14 @@ function Home() {
           </div>
         </section>
 
-
-        {/* 5. UPCOMING EVENTS (Spotted Feature Camp details) - BG: Soft Slate Gray */}
-        <section className="py-24 bg-slate-50/50 dark:bg-zinc-900/20 border-y border-border/5">
-          <div className="max-w-7xl mx-auto px-6 lg:px-10">
-            <div className="grid md:grid-cols-2 gap-16 items-center">
-              <FadeIn>
-                <div className="relative aspect-[4/5] rounded-2xl overflow-hidden group border border-border/10 shadow-md">
-                  <img 
-                    src={resolveImage(config.featured_event_image || "event")} 
-                    alt="Youth conference spotlight" 
-                    loading="lazy" 
-                    className="h-full w-full object-cover scale-100 group-hover:scale-103 transition-transform duration-[5000ms] opacity-90 dark:opacity-75" 
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-                  <div className="absolute bottom-8 left-8 right-8 text-white z-10">
-                    <p className="text-[10px] uppercase tracking-[0.35em] text-primary mb-2 font-bold">{config.featured_event_tag || "Mar 14 – 17"}</p>
-                    <h3 className="font-display text-3xl font-light tracking-wide">{config.featured_event_title}</h3>
-                    <p className="text-xs text-white/80 mt-2 font-light">{config.featured_event_place}</p>
-                  </div>
-                </div>
-              </FadeIn>
-              
-              <FadeIn delay={0.25}>
-                <div className="space-y-8 max-w-lg">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">Gathering Spotlight</p>
-                  <h2 className="font-display text-4xl font-light tracking-wide text-foreground">
-                    {config.featured_event_title ? config.featured_event_title.split(" — ")[0] : "Carriers Camp"}
-                  </h2>
-                  <p className="text-foreground/75 leading-relaxed text-sm md:text-base font-light">
-                    {config.featured_event_place}
-                  </p>
-                  <ul className="space-y-4 text-xs text-foreground/60 border-t border-border/10 pt-8 tracking-wider">
-                    {[
-                      [config.featured_event_bullet1_title || "Worship Nights", config.featured_event_bullet1_desc || "Live from the main sanctuary"],
-                      [config.featured_event_bullet2_title || "Discipleship Guilds", config.featured_event_bullet2_desc || "Identity, calling, pure pursuit"],
-                      [config.featured_event_bullet3_title || "City Outreach", config.featured_event_bullet3_desc || "Bring the light out of the room"],
-                    ].map(([k, v]) => (
-                      <li key={k} className="flex justify-between gap-4 py-1 border-b border-border/5">
-                        <span className="text-foreground/80 font-semibold">{k}</span>
-                        <span>{v}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="pt-4 flex items-center gap-6">
-                    <Link
-                      to="/contact"
-                      className="bg-primary text-primary-foreground px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider hover:bg-primary/90 transition-all duration-500 shadow-md cursor-pointer"
-                    >
-                      Register Now
-                    </Link>
-                    <Link
-                      to="/events"
-                      className="link-quiet inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary font-semibold"
-                    >
-                      See All Events <Calendar size={12} className="ml-1" />
-                    </Link>
-                  </div>
-                </div>
-              </FadeIn>
-            </div>
-          </div>
-        </section>
         {/* 6. LATEST SERMONS (Clean message plays) - BG: White */}
         <section className="py-24 bg-background">
           <div className="max-w-7xl mx-auto px-6 lg:px-10">
             <div className="grid md:grid-cols-12 gap-12 items-center">
               <FadeIn className="md:col-span-7">
-                <div 
-                  onClick={() => handleSermonClick(latestSermon)}
-                  className="aspect-video rounded-2xl overflow-hidden bg-card relative group cursor-pointer border border-border/10 shadow-lg"
+                <Link 
+                  to="/sermons"
+                  className="block aspect-video rounded-2xl overflow-hidden bg-card relative group cursor-pointer border border-border/10 shadow-lg"
                 >
                   <img 
                     src={getSermonImage(latestSermon)} 
@@ -512,7 +508,7 @@ function Home() {
                       <Play size={20} className="fill-current translate-x-0.5" />
                     </div>
                   </div>
-                </div>
+                </Link>
               </FadeIn>
               
               <FadeIn delay={0.25} className="md:col-span-5 space-y-6">
@@ -529,12 +525,12 @@ function Home() {
                   <span>{latestSermon.len} watch</span>
                 </div>
                 <div className="pt-4 flex gap-4">
-                  <button 
-                    onClick={() => handleSermonClick(latestSermon)}
+                  <Link 
+                    to="/sermons"
                     className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider hover:bg-foreground/85 transition-all duration-500 cursor-pointer"
                   >
                     Watch Now
-                  </button>
+                  </Link>
                   <Link 
                     to="/sermons" 
                     className="inline-flex items-center gap-2 border border-border px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider hover:bg-card transition-all duration-500 cursor-pointer"
@@ -770,52 +766,6 @@ function Home() {
         </div>
       )}
 
-      {/* Embedded YouTube Player Modal */}
-      {activeVideoUrl && (
-        <div 
-          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4"
-          onClick={() => setActiveVideoUrl(null)}
-        >
-          <div 
-            className="relative w-full max-w-4xl bg-card border border-white/5 rounded-xl overflow-hidden shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button 
-              onClick={() => setActiveVideoUrl(null)}
-              className="absolute top-4 right-4 z-10 bg-black/50 text-white/80 hover:text-white p-2 rounded-full backdrop-blur-sm transition-all hover:bg-black/85"
-            >
-              <X size={18} />
-            </button>
-            <div className="aspect-video w-full bg-black relative">
-              <iframe
-                src={`https://www.youtube.com/embed/${getYouTubeId(activeVideoUrl)}?autoplay=1`}
-                title="YouTube Video Player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                className="absolute inset-0 w-full h-full"
-              />
-            </div>
-            <div className="p-5 flex justify-between items-center bg-card/95 border-t border-border/10">
-              <div>
-                <p className="text-[10px] uppercase tracking-widest text-primary font-bold">Now Streaming</p>
-                <h4 className="text-base font-semibold text-foreground mt-1">
-                  {latestSermon.t}
-                </h4>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Preacher: {latestSermon.p}
-                </p>
-              </div>
-              <button 
-                onClick={() => setActiveVideoUrl(null)}
-                className="bg-primary hover:bg-primary/95 text-primary-foreground px-5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
-              >
-                Close Stream
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

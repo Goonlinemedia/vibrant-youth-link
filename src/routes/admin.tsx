@@ -219,10 +219,17 @@ function AdminPortal() {
     try {
       if (activeTab === "sermons") {
         if (editingId) {
-          await updateFirestoreDoc("sermons", editingId, sermonForm);
+          const original = sermons.find(s => s.id === editingId);
+          await updateFirestoreDoc("sermons", editingId, {
+            ...sermonForm,
+            createdAt: original?.createdAt || new Date().toISOString()
+          });
           triggerResetSuccess("Sermon updated successfully!");
         } else {
-          await addFirestoreDoc("sermons", sermonForm);
+          await addFirestoreDoc("sermons", {
+            ...sermonForm,
+            createdAt: new Date().toISOString()
+          });
           triggerResetSuccess("Sermon added successfully!");
         }
       } else if (activeTab === "events") {

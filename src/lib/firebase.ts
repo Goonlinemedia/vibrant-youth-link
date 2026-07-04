@@ -71,12 +71,12 @@ export const defaultGallery = Array.from({ length: 55 }, (_, i) => ({
 }));
 
 export const defaultSermons = [
-  { t: "When the fire fell", p: "Pastor Daniel", c: "Faith", len: "42m", img: "community", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
-  { t: "Designed for purpose", p: "Sarah M.", c: "Purpose", len: "36m", img: "word", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
-  { t: "The prayer that moves heaven", p: "Pastor Daniel", c: "Prayer", len: "48m", img: "event", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
-  { t: "Dating, waiting, knowing", p: "Joseph K.", c: "Relationships", len: "39m", img: "community", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
-  { t: "Lead from the secret place", p: "Sarah M.", c: "Leadership", len: "31m", img: "word", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
-  { t: "Faith in the unseen", p: "Pastor Daniel", c: "Faith", len: "44m", img: "event", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }
+  { t: "When the fire fell", p: "Pastor Daniel", c: "Faith", len: "42m", img: "community", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", createdAt: "2026-06-01T12:00:00Z" },
+  { t: "Designed for purpose", p: "Sarah M.", c: "Purpose", len: "36m", img: "word", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", createdAt: "2026-05-25T12:00:00Z" },
+  { t: "The prayer that moves heaven", p: "Pastor Daniel", c: "Prayer", len: "48m", img: "event", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", createdAt: "2026-05-20T12:00:00Z" },
+  { t: "Dating, waiting, knowing", p: "Joseph K.", c: "Relationships", len: "39m", img: "community", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", createdAt: "2026-05-15T12:00:00Z" },
+  { t: "Lead from the secret place", p: "Sarah M.", c: "Leadership", len: "31m", img: "word", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", createdAt: "2026-05-10T12:00:00Z" },
+  { t: "Faith in the unseen", p: "Pastor Daniel", c: "Faith", len: "44m", img: "event", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", createdAt: "2026-05-05T12:00:00Z" }
 ];
 
 export const defaultEvents = [
