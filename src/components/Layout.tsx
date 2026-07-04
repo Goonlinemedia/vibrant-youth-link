@@ -1,12 +1,19 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useState, useEffect, type ReactNode } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, Menu } from "lucide-react";
 import logo from "@/assets/logo.jpeg";
 
 import { useTheme } from "@/components/ThemeProvider";
 import Footer4Col from "@/components/ui/footer-column";
-import { AnimatedNavFramer } from "@/components/ui/navigation-menu";
+import { AnimatedNavFramer, navItems } from "@/components/ui/navigation-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
@@ -16,6 +23,8 @@ function ThemeToggle() {
       onClick={toggleTheme}
       className="group flex items-center justify-center bg-background/40 hover:bg-background/80 border border-border/40 hover:border-primary/40 h-9 w-9 rounded-full transition-all duration-[1000ms] cursor-pointer relative overflow-hidden focus:outline-none"
       title="Toggle light/dark theme"
+      aria-label="Toggle theme"
+      aria-pressed={theme === "dark"}
     >
       <div className="relative w-4 h-4 flex items-center justify-center">
         {/* Sun Icon */}
@@ -43,7 +52,57 @@ function ThemeToggle() {
   );
 }
 
+function MobileMenu() {
+  const [open, setOpen] = useState(false);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
 
+  // Close sheet when route changes
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  return (
+    <div className="md:hidden flex items-center">
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger asChild>
+          <button
+            className="group flex items-center justify-center bg-background/40 hover:bg-background/80 border border-border/40 hover:border-primary/40 h-9 w-9 rounded-full transition-all duration-300 cursor-pointer focus:outline-none"
+            aria-label="Open navigation menu"
+          >
+            <Menu size={16} className="text-primary" />
+          </button>
+        </SheetTrigger>
+        <SheetContent
+          side="right"
+          className="w-[300px] bg-background/95 backdrop-blur-md border-l border-border/10 flex flex-col justify-between p-6 pt-16"
+        >
+          <div>
+            <SheetHeader className="text-left mb-8">
+              <SheetTitle className="font-display text-lg tracking-[0.2em] uppercase text-primary">
+                Youth on Fire
+              </SheetTitle>
+            </SheetHeader>
+            <nav className="flex flex-col gap-6">
+              {navItems.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  activeProps={{ className: "text-primary! font-bold" }}
+                  className="text-lg font-semibold text-foreground/75 hover:text-primary transition-colors uppercase tracking-wider py-2 border-b border-border/5"
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </nav>
+          </div>
+          <div className="text-[10px] text-muted-foreground tracking-widest uppercase mt-auto">
+            © {new Date().getFullYear()} Youth on Fire
+          </div>
+        </SheetContent>
+      </Sheet>
+    </div>
+  );
+}
 
 export function Layout({ children }: { children: ReactNode }) {
   const [scrolled, setScrolled] = useState(false);
@@ -86,6 +145,7 @@ export function Layout({ children }: { children: ReactNode }) {
           {/* Right Floating Controls */}
           <div className="z-[110] flex items-center gap-4">
             <ThemeToggle />
+            <MobileMenu />
           </div>
         </div>
       </header>

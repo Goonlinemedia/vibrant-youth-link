@@ -4,7 +4,7 @@ import { Navigation, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Link } from "@tanstack/react-router";
 
-const navItems = [
+export const navItems = [
   { name: "About", href: "/about" },
   { name: "Events", href: "/events" },
   { name: "Sermons", href: "/sermons" },
@@ -98,7 +98,7 @@ export function AnimatedNavFramer() {
   };
 
   return (
-    <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[120]">
+    <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[120] hidden md:block">
       <motion.nav
         initial={{ y: -80, opacity: 0 }}
         animate={isExpanded ? "expanded" : "collapsed"}
