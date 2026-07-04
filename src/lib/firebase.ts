@@ -65,12 +65,12 @@ export const defaultGallery = Array.from({ length: 55 }, (_, i) => ({
 }));
 
 export const defaultSermons = [
-  { t: "When the fire fell", p: "Pastor Daniel", c: "Faith", len: "42m", img: "community" },
-  { t: "Designed for purpose", p: "Sarah M.", c: "Purpose", len: "36m", img: "word" },
-  { t: "The prayer that moves heaven", p: "Pastor Daniel", c: "Prayer", len: "48m", img: "event" },
-  { t: "Dating, waiting, knowing", p: "Joseph K.", c: "Relationships", len: "39m", img: "community" },
-  { t: "Lead from the secret place", p: "Sarah M.", c: "Leadership", len: "31m", img: "word" },
-  { t: "Faith in the unseen", p: "Pastor Daniel", c: "Faith", len: "44m", img: "event" }
+  { t: "When the fire fell", p: "Pastor Daniel", c: "Faith", len: "42m", img: "community", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+  { t: "Designed for purpose", p: "Sarah M.", c: "Purpose", len: "36m", img: "word", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+  { t: "The prayer that moves heaven", p: "Pastor Daniel", c: "Prayer", len: "48m", img: "event", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+  { t: "Dating, waiting, knowing", p: "Joseph K.", c: "Relationships", len: "39m", img: "community", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+  { t: "Lead from the secret place", p: "Sarah M.", c: "Leadership", len: "31m", img: "word", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+  { t: "Faith in the unseen", p: "Pastor Daniel", c: "Faith", len: "44m", img: "event", videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }
 ];
 
 export const defaultEvents = [

@@ -74,7 +74,7 @@ function AdminPortal() {
   const [showForm, setShowForm] = useState(false);
 
   // Schema form values
-  const [sermonForm, setSermonForm] = useState({ t: "", p: "", c: "Faith", len: "", img: "community" });
+  const [sermonForm, setSermonForm] = useState({ t: "", p: "", c: "Faith", len: "", img: "community", videoUrl: "" });
   const [eventForm, setEventForm] = useState({ date: "", name: "", place: "", tag: "Camp", featured: false });
   const [resourceForm, setResourceForm] = useState({ t: "", d: "", tag: "PDF", icon: "BookOpen" });
   const [bookForm, setBookForm] = useState({ title: "", author: "" });
@@ -193,7 +193,7 @@ function AdminPortal() {
   const startEdit = (item: any) => {
     setEditingId(item.id);
     setShowForm(true);
-    if (activeTab === "sermons") setSermonForm({ t: item.t, p: item.p, c: item.c, len: item.len, img: item.img || "community" });
+    if (activeTab === "sermons") setSermonForm({ t: item.t, p: item.p, c: item.c, len: item.len, img: item.img || "community", videoUrl: item.videoUrl || "" });
     if (activeTab === "events") setEventForm({ date: item.date, name: item.name, place: item.place, tag: item.tag, featured: item.featured || false });
     if (activeTab === "resources") setResourceForm({ t: item.t, d: item.d, tag: item.tag, icon: item.icon || "BookOpen" });
     if (activeTab === "rhythms") setRhythmForm({ day: item.day, name: item.name, time: item.time });
@@ -204,7 +204,7 @@ function AdminPortal() {
   const resetForms = () => {
     setEditingId(null);
     setShowForm(false);
-    setSermonForm({ t: "", p: "", c: "Faith", len: "", img: "community" });
+    setSermonForm({ t: "", p: "", c: "Faith", len: "", img: "community", videoUrl: "" });
     setEventForm({ date: "", name: "", place: "", tag: "Camp", featured: false });
     setResourceForm({ t: "", d: "", tag: "PDF", icon: "BookOpen" });
     setBookForm({ title: "", author: "" });
@@ -1103,6 +1103,16 @@ function AdminPortal() {
                                 className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
                               />
                             </div>
+                          </div>
+                          <div>
+                            <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">YouTube Video URL</label>
+                            <input
+                              type="text"
+                              value={sermonForm.videoUrl}
+                              onChange={(e) => setSermonForm({ ...sermonForm, videoUrl: e.target.value })}
+                              placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                              className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                            />
                           </div>
                         </>
                       )}
