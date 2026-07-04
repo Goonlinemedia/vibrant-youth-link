@@ -36,15 +36,15 @@ export default function Footer4Col() {
   const footer = configs[0] || defaultFooterConfig;
 
   const socialLinks = [
-    { icon: Instagram, label: 'Instagram', href: footer.instagram_link || '#' },
-    { icon: Youtube, label: 'YouTube', href: footer.youtube_link || '#' },
-    { icon: MessageCircle, label: 'WhatsApp', href: footer.whatsapp_link || '#' },
+    { icon: Instagram, label: 'Instagram', href: footer.instagram_link && footer.instagram_link !== '#' ? footer.instagram_link : 'https://instagram.com/youthonfire' },
+    { icon: Youtube, label: 'YouTube', href: footer.youtube_link && footer.youtube_link !== '#' ? footer.youtube_link : 'https://www.youtube.com/@overcomersgrace' },
+    { icon: MessageCircle, label: 'WhatsApp', href: footer.whatsapp_link && footer.whatsapp_link !== '#' ? footer.whatsapp_link : 'https://wa.me/2348123456789' },
   ];
 
   const contactInfo = [
     { icon: Mail, text: footer.contact_email || 'info@youthonfire.org' },
-    { icon: Phone, text: footer.contact_phone || '+1 (555) 123-4567' },
-    { icon: MapPin, text: footer.contact_address || 'Main Sanctuary, City Church', isAddress: true },
+    { icon: Phone, text: footer.contact_phone || '+234 812 345 6789' },
+    { icon: MapPin, text: footer.contact_address || '2 Archbishop Ademowo Crescent, Off Ago Palace Way, Okota, Lagos, Nigeria', isAddress: true },
   ];
 
   return (
@@ -148,25 +148,37 @@ export default function Footer4Col() {
             <div className="text-center sm:text-left">
               <p className="text-[10px] uppercase tracking-[0.25em] text-neutral-400 mb-6 font-semibold">Contact Us</p>
               <ul className="mt-4 space-y-4 text-xs">
-                {contactInfo.map(({ icon: Icon, text, isAddress }) => (
-                  <li key={text}>
-                    <a
-                      className="flex items-center justify-center gap-1.5 sm:justify-start group text-neutral-400 hover:text-white transition-all duration-[600ms]"
-                      href="#"
-                    >
-                      <Icon className="text-primary size-4 shrink-0 shadow-sm transition-transform duration-[600ms] group-hover:scale-110" />
-                      {isAddress ? (
-                        <address className="text-neutral-400 group-hover:text-white flex-1 not-italic transition-colors duration-[600ms]">
-                          {text}
-                        </address>
-                      ) : (
-                        <span className="text-neutral-400 group-hover:text-white flex-1 transition-colors duration-[600ms]">
-                          {text}
-                        </span>
-                      )}
-                    </a>
-                  </li>
-                ))}
+                {contactInfo.map(({ icon: Icon, text, isAddress }) => {
+                  let href = "#";
+                  if (isAddress) {
+                    href = "https://www.google.com/maps/place/Overcomers+Church+World+Outreach/@6.5000246,3.2999304,19.79z/data=!4m6!3m5!1s0x103b8edf1cf04881:0x3b67b878320ebe54!8m2!3d6.5003656!4d3.299835!16s%2Fg%2F11b6j5c442?entry=ttu&g_ep=EgoyMDI2MDYyOS4wIKXMDSoASAFQAw%3D%3D";
+                  } else if (text.includes("@")) {
+                    href = `mailto:${text}`;
+                  } else {
+                    href = `tel:${text.replace(/[^+\d]/g, "")}`;
+                  }
+                  return (
+                    <li key={text}>
+                      <a
+                        className="flex items-center justify-center gap-1.5 sm:justify-start group text-neutral-400 hover:text-white transition-all duration-[600ms]"
+                        href={href}
+                        target={isAddress ? "_blank" : undefined}
+                        rel={isAddress ? "noopener noreferrer" : undefined}
+                      >
+                        <Icon className="text-primary size-4 shrink-0 shadow-sm transition-transform duration-[600ms] group-hover:scale-110" />
+                        {isAddress ? (
+                          <address className="text-neutral-400 group-hover:text-white flex-1 not-italic transition-colors duration-[600ms]">
+                            {text}
+                          </address>
+                        ) : (
+                          <span className="text-neutral-400 group-hover:text-white flex-1 transition-colors duration-[600ms]">
+                            {text}
+                          </span>
+                        )}
+                      </a>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </div>

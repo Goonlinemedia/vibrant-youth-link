@@ -149,12 +149,12 @@ export const defaultHomepageConfig = {
 export const defaultFooterConfig = {
   company_name: "Youth on Fire",
   company_description: "A generation set ablaze by the Spirit — pursuing Christ, building community, carrying the flame.",
-  instagram_link: "#",
-  youtube_link: "#",
-  whatsapp_link: "#",
+  instagram_link: "https://instagram.com/youthonfire",
+  youtube_link: "https://www.youtube.com/@overcomersgrace",
+  whatsapp_link: "https://wa.me/2348123456789",
   contact_email: "info@youthonfire.org",
-  contact_phone: "+1 (555) 123-4567",
-  contact_address: "Main Sanctuary, City Church"
+  contact_phone: "+234 812 345 6789",
+  contact_address: "2 Archbishop Ademowo Crescent, Off Ago Palace Way, Okota, Lagos, Nigeria"
 };
 
 // Firestore CRUD Helpers

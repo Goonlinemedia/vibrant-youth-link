@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Layout, Section, FadeIn } from "@/components/Layout";
 import community from "@/assets/community.jpg";
+import pastorDanielImg from "@/assets/pastor_daniel.png";
+import sarahMImg from "@/assets/sarah_m.png";
+import josephKImg from "@/assets/joseph_k.png";
 import { useFirestoreCollection } from "@/hooks/useFirestoreCollection";
 import { defaultTeam, defaultRhythms } from "@/lib/firebase";
 
@@ -17,6 +20,13 @@ export const Route = createFileRoute("/about")({
 function About() {
   const team = useFirestoreCollection("leadership_team", defaultTeam);
   const rhythms = useFirestoreCollection("weekly_rhythm", defaultRhythms);
+
+  const getLeaderImage = (name: string) => {
+    if (name.includes("Daniel")) return pastorDanielImg;
+    if (name.includes("Sarah")) return sarahMImg;
+    if (name.includes("Joseph")) return josephKImg;
+    return null;
+  };
 
   return (
     <Layout>
@@ -58,15 +68,27 @@ function About() {
 
       <Section eyebrow="Leadership" title="The team carrying this.">
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
-          {team.map((p) => (
-            <FadeIn key={p.name}>
-              <div className="group">
-                <div className="aspect-[4/5] rounded-md bg-card overflow-hidden mb-4 ember-glow" />
-                <p className="font-display text-xl">{p.name}</p>
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mt-1">{p.role}</p>
-              </div>
-            </FadeIn>
-          ))}
+          {team.map((p) => {
+            const img = getLeaderImage(p.name);
+            return (
+              <FadeIn key={p.name}>
+                <div className="group">
+                  <div className="aspect-[4/5] rounded-xl overflow-hidden mb-4 bg-secondary/35 relative border border-border/5 shadow-sm">
+                    {img && (
+                      <img 
+                        src={img} 
+                        alt={p.name} 
+                        loading="lazy" 
+                        className="w-full h-full object-cover scale-100 group-hover:scale-103 transition-transform duration-700 ease-out" 
+                      />
+                    )}
+                  </div>
+                  <p className="font-display text-xl font-medium">{p.name}</p>
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground mt-1">{p.role}</p>
+                </div>
+              </FadeIn>
+            );
+          })}
         </div>
       </Section>
 

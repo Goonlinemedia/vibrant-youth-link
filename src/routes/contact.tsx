@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Layout, Section, FadeIn } from "@/components/Layout";
-import { MessageCircle, Instagram, Youtube, MapPin, Clock, Mail, CheckCircle } from "lucide-react";
+import { MessageCircle, Instagram, Youtube, MapPin, Clock, Mail, CheckCircle, Phone } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { addFirestoreDoc } from "@/lib/firebase";
@@ -394,9 +394,14 @@ function Contact() {
                     <MapPin className="text-primary size-5 shrink-0 mt-0.5" />
                     <div>
                       <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Location</p>
-                      <p className="font-display text-base leading-relaxed mt-1">
+                      <a 
+                        href="https://www.google.com/maps/place/Overcomers+Church+World+Outreach/@6.5000246,3.2999304,19.79z/data=!4m6!3m5!1s0x103b8edf1cf04881:0x3b67b878320ebe54!8m2!3d6.5003656!4d3.299835!16s%2Fg%2F11b6j5c442?entry=ttu&g_ep=EgoyMDI2MDYyOS4wIKXMDSoASAFQAw%3D%3D"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="link-quiet font-display text-base leading-relaxed mt-1 block hover:text-primary transition-colors duration-500"
+                      >
                         Main Auditorium<br />2 Archbishop Ademowo Crescent, Off Ago Palace Way, Okota (Near Forte Oil Station), Lagos, Nigeria
-                      </p>
+                      </a>
                     </div>
                   </div>
 
@@ -409,6 +414,17 @@ function Contact() {
                         Sunday Service — 8:00 AM<br />
                         Wednesday Fellowship — 6:00 PM
                       </p>
+                    </div>
+                  </div>
+
+                  {/* Phone */}
+                  <div className="flex gap-4 items-start">
+                    <Phone className="text-primary size-5 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Phone Number</p>
+                      <a href="tel:+2348123456789" className="link-quiet text-xs text-foreground/90 mt-1 block">
+                        +234 812 345 6789
+                      </a>
                     </div>
                   </div>
 
@@ -428,13 +444,13 @@ function Contact() {
                 <div className="pt-4 border-t border-border/10">
                   <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-4">Follow our Rhythm</p>
                   <div className="flex gap-4 text-foreground/70">
-                    <a href="#" aria-label="WhatsApp" className="hover:text-primary transition-colors duration-500">
+                    <a href="https://wa.me/2348123456789" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="hover:text-primary transition-colors duration-500">
                       <MessageCircle size={20} />
                     </a>
-                    <a href="#" aria-label="Instagram" className="hover:text-primary transition-colors duration-500">
+                    <a href="https://instagram.com/youthonfire" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-primary transition-colors duration-500">
                       <Instagram size={20} />
                     </a>
-                    <a href="#" aria-label="YouTube" className="hover:text-primary transition-colors duration-500">
+                    <a href="https://www.youtube.com/@overcomersgrace" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="hover:text-primary transition-colors duration-500">
                       <Youtube size={20} />
                     </a>
                   </div>

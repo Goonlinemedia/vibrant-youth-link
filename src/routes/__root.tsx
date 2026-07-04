@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import heroImg from "@/assets/hero.jpg";
 
 function NotFoundComponent() {
   return (
@@ -76,6 +77,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "Youth on Fire Ministries — sermons, events, resources and community for a generation pursuing Christ." },
       { property: "og:title", content: "Youth on Fire Ministries" },
       { property: "og:description", content: "A generation set ablaze by the Spirit." },
+      { property: "og:image", content: heroImg },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

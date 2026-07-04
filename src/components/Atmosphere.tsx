@@ -364,8 +364,8 @@ export function CanvasEmbers() {
       }
     }
 
-    // Initialize 70 slow particles
-    const particleCount = 75;
+    // Initialize 20 slow particles
+    const particleCount = 20;
     const particles: Ember[] = [];
     for (let i = 0; i < particleCount; i++) {
       const p = new Ember();

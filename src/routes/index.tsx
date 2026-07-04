@@ -27,6 +27,9 @@ import word from "@/assets/word.jpg";
 import event from "@/assets/event.jpg";
 import churchCongregation from "@/assets/church_congregation.png";
 import churchTeam from "@/assets/church_team.png";
+import pastorDanielImg from "@/assets/pastor_daniel.png";
+import sarahMImg from "@/assets/sarah_m.png";
+import josephKImg from "@/assets/joseph_k.png";
 import tile1 from "@/assets/tile1.jpg";
 import tile2 from "@/assets/tile2.jpg";
 import tile3 from "@/assets/tile3.jpg";
@@ -129,8 +132,8 @@ function Home() {
               height={1080} 
             />
             {/* 40-50% Dark Overlay for supreme text contrast */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-black/85 via-black/55 to-black/40 z-10" />
-            <div className="absolute inset-0 ember-glow opacity-30 z-20" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-black/30 z-10" />
+            <div className="absolute inset-0 ember-glow opacity-35 z-20" />
           </div>
 
           <div className="relative z-30 max-w-7xl mx-auto px-6 lg:px-10 w-full text-left">
@@ -148,7 +151,7 @@ function Home() {
               initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.8, delay: 0.5 }}
-              className="font-extrabold text-white text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[1.0] text-balance max-w-4xl [text-shadow:0_4px_24px_rgba(0,0,0,0.5)]"
+              className="font-display font-medium text-white text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[1.0] text-balance max-w-4xl [text-shadow:0_4px_24px_rgba(0,0,0,0.5)]"
             >
               {config.hero_title || "Welcome Home"}
             </motion.h1>
@@ -179,14 +182,14 @@ function Home() {
             >
               <Link
                 to="/contact"
-                className="group inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-full text-xs font-semibold uppercase tracking-widest hover:bg-primary/90 transition-all duration-[800ms] shadow-[0_0_20px_rgba(249,115,22,0.2)] hover:shadow-[0_0_30px_rgba(249,115,22,0.4)] cursor-pointer"
+                className="group inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-full text-sm font-semibold tracking-wide hover:bg-primary/90 transition-all duration-[800ms] shadow-[0_0_20px_rgba(249,115,22,0.2)] hover:shadow-[0_0_30px_rgba(249,115,22,0.4)] cursor-pointer"
               >
                 Plan Your Visit
                 <ArrowUpRight size={14} className="transition-transform duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </Link>
               <Link
                 to="/sermons"
-                className="group inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-8 py-4 rounded-full text-xs font-semibold uppercase tracking-widest transition-all duration-[800ms] backdrop-blur-sm cursor-pointer"
+                className="group inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-8 py-4 rounded-full text-sm font-semibold tracking-wide transition-all duration-[800ms] backdrop-blur-sm cursor-pointer"
               >
                 <Play size={12} className="fill-current" /> Watch Online
               </Link>
@@ -237,25 +240,25 @@ function Home() {
             <div className="grid lg:grid-cols-12 gap-12 items-center mb-16">
               <div className="lg:col-span-6 space-y-4">
                 <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">{config.welcome_eyebrow || "Our Invitation"}</p>
-                <h2 className="font-display text-4xl sm:text-5xl font-light tracking-wide text-foreground">
+                <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-medium tracking-wide text-foreground">
                   {config.welcome_title || "We're Glad You're Here"}
                 </h2>
               </div>
               <div className="lg:col-span-6">
-                <p className="text-foreground/70 leading-relaxed text-sm md:text-base max-w-xl">
+                <p className="text-foreground/75 leading-relaxed text-sm md:text-base max-w-xl">
                   {config.welcome_description}
                 </p>
               </div>
             </div>
 
-            {/* Glowing service detail cards */}
+            {/* Flat service detail cards */}
             <div className="grid md:grid-cols-3 gap-6">
               <FadeIn delay={0.1}>
-                <div className="bg-card border border-border/10 rounded-xl p-8 shadow-sm space-y-4 hover:border-primary/20 hover:shadow-md transition-all duration-700">
+                <div className="bg-secondary/40 rounded-xl p-8 space-y-4 hover:bg-secondary/60 transition-all duration-700">
                   <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                     <Clock size={20} />
                   </div>
-                  <h3 className="font-display text-2xl font-light">Sunday Worship</h3>
+                  <h3 className="font-display text-2xl font-medium">Sunday Worship</h3>
                   <p className="text-xs text-muted-foreground leading-relaxed">
                     Join us in the main sanctuary for vibrant worship, community connection, and solid biblical teaching.
                   </p>
@@ -264,11 +267,11 @@ function Home() {
               </FadeIn>
 
               <FadeIn delay={0.2}>
-                <div className="bg-card border border-border/10 rounded-xl p-8 shadow-sm space-y-4 hover:border-primary/20 hover:shadow-md transition-all duration-700">
+                <div className="bg-secondary/40 rounded-xl p-8 space-y-4 hover:bg-secondary/60 transition-all duration-700">
                   <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                     <Flame size={20} />
                   </div>
-                  <h3 className="font-display text-2xl font-light">Midweek Fellowship</h3>
+                  <h3 className="font-display text-2xl font-medium">Midweek Fellowship</h3>
                   <p className="text-xs text-muted-foreground leading-relaxed">
                     A midweek recharge for prayers, youth gatherings, cell groups, and direct interactive discipleship study.
                   </p>
@@ -277,26 +280,67 @@ function Home() {
               </FadeIn>
 
               <FadeIn delay={0.3}>
-                <div className="bg-card border border-border/10 rounded-xl p-8 shadow-sm space-y-4 hover:border-primary/20 hover:shadow-md transition-all duration-700">
+                <div className="bg-secondary/40 rounded-xl p-8 space-y-4 hover:bg-secondary/60 transition-all duration-700">
                   <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                     <MapPin size={20} />
                   </div>
-                  <h3 className="font-display text-2xl font-light">Our Address</h3>
+                  <h3 className="font-display text-2xl font-medium">Our Address</h3>
                   <p className="text-xs text-muted-foreground leading-relaxed">
                     {config.welcome_service3_address}<br />
                     Directions, transit info, and parking details are available.
                   </p>
-                  <Link 
-                    to="/contact" 
+                  <a 
+                    href="https://www.google.com/maps/place/Overcomers+Church+World+Outreach/@6.5000246,3.2999304,19.79z/data=!4m6!3m5!1s0x103b8edf1cf04881:0x3b67b878320ebe54!8m2!3d6.5003656!4d3.299835!16s%2Fg%2F11b6j5c442?entry=ttu&g_ep=EgoyMDI2MDYyOS4wIKXMDSoASAFQAw%3D%3D"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 text-xs text-primary font-semibold hover:underline"
                   >
                     Get Directions <ArrowUpRight size={12} />
-                  </Link>
+                  </a>
                 </div>
               </FadeIn>
             </div>
           </div>
         </section>
+
+        {/* What to Expect Section */}
+        <Section eyebrow="What to Expect" title="First Time? Here is what to expect this Sunday.">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                title: "Arrival & Service Length",
+                desc: "Services begin promptly at 8:00 AM and run for about 90 minutes. Plan to arrive 10-15 minutes early to connect and find a comfortable seat."
+              },
+              {
+                title: "Dress Code",
+                desc: "Come as you are! We are a community of all ages and styles. You'll see everything from casual jeans and t-shirts to traditional attire."
+              },
+              {
+                title: "Safe & Guided Parking",
+                desc: "Secure parking is available inside and directly outside the sanctuary premises, with helpful traffic team members to guide you in."
+              },
+              {
+                title: "Kids & Teens Programs",
+                desc: "Our children's church and teen groups meet in safe, dedicated spaces with age-appropriate worship, bible lessons, and fun activities."
+              },
+              {
+                title: "Friendly Welcome",
+                desc: "From the moment you walk in, our welcome team is ready to guide you. If you're new, stop by the welcome hub for a special gift!"
+              },
+              {
+                title: "Worship & Word",
+                desc: "Expect passionate, contemporary praise and worship, followed by a relevant, Scripture-grounded sermon designed to challenge and inspire."
+              }
+            ].map((item, idx) => (
+              <FadeIn key={item.title} delay={idx * 0.05}>
+                <div className="space-y-3">
+                  <h3 className="font-display text-xl font-medium text-foreground">{item.title}</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </Section>
 
 
 
@@ -324,7 +368,7 @@ function Home() {
               <FadeIn delay={0.25}>
                 <div className="space-y-8 max-w-lg">
                   <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">Gathering Spotlight</p>
-                  <h2 className="font-display text-4xl font-light tracking-wide text-foreground">
+                  <h2 className="font-display text-4xl font-medium tracking-wide text-foreground">
                     {config.featured_event_title ? config.featured_event_title.split(" — ")[0] : "Carriers Camp"}
                   </h2>
                   <p className="text-foreground/75 leading-relaxed text-sm md:text-base font-light">
@@ -345,7 +389,7 @@ function Home() {
                   <div className="pt-4 flex items-center gap-6">
                     <Link
                       to="/contact"
-                      className="bg-primary text-primary-foreground px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider hover:bg-primary/90 transition-all duration-500 shadow-md cursor-pointer"
+                      className="bg-primary text-primary-foreground px-6 py-3 rounded-full text-sm font-semibold tracking-wide hover:bg-primary/90 transition-all duration-500 shadow-md cursor-pointer"
                     >
                       Register Now
                     </Link>
@@ -383,7 +427,7 @@ function Home() {
               <div className="md:col-span-6 space-y-6">
                 <FadeIn delay={0.2}>
                   <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">{config.about_eyebrow || "Who We Are"}</p>
-                  <h2 className="font-display text-3xl sm:text-4xl font-light tracking-wide text-foreground">
+                  <h2 className="font-display text-3xl sm:text-4xl font-medium tracking-wide text-foreground">
                     {config.about_title || "A Spirit-Filled Community Pursuing Christ"}
                   </h2>
                   <p className="text-foreground/75 leading-relaxed text-sm md:text-base max-w-lg">
@@ -406,7 +450,7 @@ function Home() {
                   <div className="pt-6">
                     <Link
                       to="/about"
-                      className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider hover:bg-foreground/85 transition-all duration-500 cursor-pointer"
+                      className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-3 rounded-full text-sm font-semibold tracking-wide hover:bg-foreground/85 transition-all duration-500 cursor-pointer"
                     >
                       Read Our Story
                     </Link>
@@ -422,7 +466,7 @@ function Home() {
           <div className="max-w-7xl mx-auto px-6 lg:px-10">
             <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
               <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">{config.ministries_eyebrow || "Ministries"}</p>
-              <h2 className="font-display text-3xl sm:text-4xl font-light tracking-wide text-foreground">
+              <h2 className="font-display text-3xl sm:text-4xl font-medium tracking-wide text-foreground">
                 {config.ministries_title || "Finding Your Space to Connect"}
               </h2>
               <p className="text-xs text-muted-foreground leading-relaxed max-w-md mx-auto">
@@ -464,18 +508,18 @@ function Home() {
                 },
               ].map((m, idx) => (
                 <FadeIn key={m.title} delay={idx * 0.1}>
-                  <div className="bg-card border border-border/10 rounded-xl p-8 h-full space-y-4 flex flex-col justify-between hover:border-primary/20 hover:shadow-md transition-all duration-700">
+                  <div className="bg-secondary/40 rounded-xl p-8 h-full space-y-4 flex flex-col justify-between hover:bg-secondary/60 transition-all duration-700">
                     <div className="space-y-4">
                       <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                         {m.icon}
                       </div>
-                      <h3 className="font-display text-xl font-light">{m.title}</h3>
+                      <h3 className="font-display text-xl font-medium">{m.title}</h3>
                       <p className="text-xs text-muted-foreground leading-relaxed">{m.desc}</p>
                     </div>
                     <div className="pt-4 border-t border-border/5">
                       <Link 
                         to="/about" 
-                        className="inline-flex items-center gap-1 text-[11px] text-primary font-bold uppercase tracking-wider hover:underline"
+                        className="inline-flex items-center gap-1 text-xs text-primary font-semibold tracking-wide hover:underline"
                       >
                         Learn More <ArrowUpRight size={12} />
                       </Link>
@@ -513,7 +557,7 @@ function Home() {
               
               <FadeIn delay={0.25} className="md:col-span-5 space-y-6">
                 <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">Latest Sermon</p>
-                <h3 className="font-display text-2xl md:text-3xl font-light tracking-wide leading-snug">
+                <h3 className="font-display text-2xl md:text-3xl font-medium tracking-wide leading-snug">
                   {latestSermon.t}
                 </h3>
                 <p className="text-foreground/75 text-xs leading-relaxed tracking-wider">
@@ -527,13 +571,13 @@ function Home() {
                 <div className="pt-4 flex gap-4">
                   <Link 
                     to="/sermons"
-                    className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider hover:bg-foreground/85 transition-all duration-500 cursor-pointer"
+                    className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-3 rounded-full text-sm font-semibold tracking-wide hover:bg-foreground/85 transition-all duration-500 cursor-pointer"
                   >
                     Watch Now
                   </Link>
                   <Link 
                     to="/sermons" 
-                    className="inline-flex items-center gap-2 border border-border px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider hover:bg-card transition-all duration-500 cursor-pointer"
+                    className="inline-flex items-center gap-2 border border-border px-6 py-3 rounded-full text-sm font-semibold tracking-wide hover:bg-card transition-all duration-500 cursor-pointer"
                   >
                     View All
                   </Link>
@@ -543,20 +587,46 @@ function Home() {
           </div>
         </section>
 
+        {/* Leadership Section */}
+        <Section eyebrow="Leadership" title="The hearts carrying the vision.">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
+            {[
+              { name: "Pastor Daniel O.", role: "Youth Pastor", img: pastorDanielImg },
+              { name: "Sarah M.", role: "Discipleship Lead", img: sarahMImg },
+              { name: "Joseph K.", role: "Worship Lead", img: josephKImg }
+            ].map((leader, i) => (
+              <FadeIn key={leader.name} delay={i * 0.1}>
+                <div className="group">
+                  <div className="aspect-[4/5] rounded-xl overflow-hidden mb-4 bg-secondary/35 relative border border-border/5 shadow-sm">
+                    <img 
+                      src={leader.img} 
+                      alt={leader.name} 
+                      loading="lazy" 
+                      className="w-full h-full object-cover scale-100 group-hover:scale-103 transition-transform duration-700 ease-out" 
+                    />
+                  </div>
+                  <h4 className="font-display text-xl font-medium text-foreground">{leader.name}</h4>
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground mt-1">{leader.role}</p>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </Section>
+
 
         {/* 7. TESTIMONIALS (Authentic Stories with Images) - BG: Soft Cream */}
         <section className="py-24 bg-[#fdfaf4] dark:bg-[#12100d] border-y border-border/5">
           <div className="max-w-7xl mx-auto px-6 lg:px-10">
             <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
               <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">Testimonials</p>
-              <h2 className="font-display text-3xl sm:text-4xl font-light tracking-wide text-foreground">
+              <h2 className="font-display text-3xl sm:text-4xl font-medium tracking-wide text-foreground">
                 Stories from Our Family
               </h2>
             </div>
 
             <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
               <FadeIn delay={0.1}>
-                <div className="bg-card border border-border/10 rounded-2xl p-8 shadow-sm space-y-6 flex flex-col justify-between h-full">
+                <div className="bg-secondary/40 rounded-2xl p-8 space-y-6 flex flex-col justify-between h-full hover:bg-secondary/50 transition-all duration-700">
                   <p className="font-display italic text-lg leading-relaxed text-foreground/80">
                     "From the first Sunday I attended, everyone made me feel like family. I wasn't just another seat filler; the leadership genuinely cared about my walk and faith questions."
                   </p>
@@ -573,7 +643,7 @@ function Home() {
               </FadeIn>
 
               <FadeIn delay={0.2}>
-                <div className="bg-card border border-border/10 rounded-2xl p-8 shadow-sm space-y-6 flex flex-col justify-between h-full">
+                <div className="bg-secondary/40 rounded-2xl p-8 space-y-6 flex flex-col justify-between h-full hover:bg-secondary/50 transition-all duration-700">
                   <p className="font-display italic text-lg leading-relaxed text-foreground/80">
                     "Finding a young community that is unapologetically Bible-centered and Spirit-filled changed everything for me. The Friday worship nights are pure encounter."
                   </p>
@@ -598,9 +668,9 @@ function Home() {
           <div className="max-w-7xl mx-auto px-6 lg:px-10">
             <div className="grid md:grid-cols-2 gap-8 items-stretch">
               <FadeIn delay={0.1}>
-                <div className="bg-card border border-border/10 rounded-2xl p-8 md:p-10 shadow-sm space-y-6 flex flex-col justify-between h-full hover:border-primary/20 hover:shadow-md transition-all duration-700">
+                <div className="bg-secondary/40 rounded-2xl p-8 md:p-10 space-y-6 flex flex-col justify-between h-full hover:bg-secondary/50 transition-all duration-700">
                   <div className="space-y-4">
-                    <h3 className="font-display text-2xl md:text-3xl font-light">Join a Small Group</h3>
+                    <h3 className="font-display text-2xl md:text-3xl font-medium">Join a Small Group</h3>
                     <p className="text-xs text-muted-foreground leading-relaxed">
                       We believe life change happens in circles, not just rows. Connect in weekly cell groups across the city for Bible study, prayers, and real friendships.
                     </p>
@@ -608,7 +678,7 @@ function Home() {
                   <div className="pt-6">
                     <Link
                       to="/contact"
-                      className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider hover:bg-primary/90 transition-all duration-500 cursor-pointer"
+                      className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full text-sm font-semibold tracking-wide hover:bg-primary/90 transition-all duration-500 cursor-pointer"
                     >
                       Find a Group <ArrowUpRight size={12} />
                     </Link>
@@ -617,17 +687,19 @@ function Home() {
               </FadeIn>
 
               <FadeIn delay={0.2}>
-                <div className="bg-card border border-border/10 rounded-2xl p-8 md:p-10 shadow-sm space-y-6 flex flex-col justify-between h-full hover:border-primary/20 hover:shadow-md transition-all duration-700">
+                <div className="bg-secondary/40 rounded-2xl p-8 md:p-10 space-y-6 flex flex-col justify-between h-full hover:bg-secondary/50 transition-all duration-700">
                   <div className="space-y-4">
-                    <h3 className="font-display text-2xl md:text-3xl font-light">Support the Ministry</h3>
+                    <h3 className="font-display text-2xl md:text-3xl font-medium">Support the Ministry</h3>
                     <p className="text-xs text-muted-foreground leading-relaxed">
                       Your generosity enables us to build student facilities, host free youth outreach camps, and spread the gospel throughout campuses and local communities.
                     </p>
                   </div>
                   <div className="pt-6">
                     <a
-                      href="#"
-                      className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider hover:bg-foreground/85 transition-all duration-500 cursor-pointer"
+                      href="https://paystack.com/pay/youthonfire"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-3 rounded-full text-sm font-semibold tracking-wide hover:bg-foreground/85 transition-all duration-500 cursor-pointer"
                     >
                       Give Online <ExternalLink size={12} />
                     </a>
@@ -646,24 +718,35 @@ function Home() {
               <div className="md:col-span-5 space-y-6">
                 <FadeIn>
                   <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">Need Help?</p>
-                  <h2 className="font-display text-3xl sm:text-4xl font-light tracking-wide text-foreground">
+                  <h2 className="font-display text-3xl sm:text-4xl font-medium tracking-wide text-foreground">
                     Get in Touch with Us
                   </h2>
                   <p className="text-xs text-muted-foreground leading-relaxed max-w-sm">
                     Have questions about gatherings, prayer requests, or transportation? Let us help you plan your visit.
                   </p>
-                  <div className="space-y-4 pt-4 text-xs text-foreground/80">
+                  <div className="space-y-4 pt-4 text-xs text-foreground/80 font-medium">
                     <p className="flex items-center gap-2 leading-relaxed">
-                      <MapPin size={14} className="text-primary shrink-0 mt-0.5" /> 2 Archbishop Ademowo Crescent, Off Ago Palace Way, Okota (Near Forte Oil Station), Lagos, Nigeria
+                      <MapPin size={14} className="text-primary shrink-0 mt-0.5" />
+                      <a 
+                        href="https://www.google.com/maps/place/Overcomers+Church+World+Outreach/@6.5000246,3.2999304,19.79z/data=!4m6!3m5!1s0x103b8edf1cf04881:0x3b67b878320ebe54!8m2!3d6.5003656!4d3.299835!16s%2Fg%2F11b6j5c442?entry=ttu&g_ep=EgoyMDI2MDYyOS4wIKXMDSoASAFQAw%3D%3D"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-primary transition-colors duration-500"
+                      >
+                        2 Archbishop Ademowo Crescent, Off Ago Palace Way, Okota (Near Forte Oil Station), Lagos, Nigeria
+                      </a>
                     </p>
                     <p className="flex items-center gap-2">
-                      <Mail size={14} className="text-primary" /> hello@youthonfire.org
+                      <Mail size={14} className="text-primary" />
+                      <a href="mailto:hello@youthonfire.org" className="hover:text-primary transition-colors duration-500">
+                        hello@youthonfire.org
+                      </a>
                     </p>
                   </div>
                   <div className="pt-6 flex gap-4">
                     <Link
                       to="/contact"
-                      className="bg-primary text-primary-foreground px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider hover:bg-primary/90 transition-all duration-500 shadow-md cursor-pointer"
+                      className="bg-primary text-primary-foreground px-6 py-3 rounded-full text-sm font-semibold tracking-wide hover:bg-primary/90 transition-all duration-500 shadow-md cursor-pointer"
                     >
                       Contact & Register
                     </Link>
@@ -677,7 +760,7 @@ function Home() {
                   <div className="w-full aspect-[16/9] rounded-2xl overflow-hidden border border-border/10 shadow-sm relative group">
                     <iframe 
                       title="Church map"
-                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.492576974127!2d3.359288214770289!3d6.459039395327299!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103b8b17b6ad7f27%3A0xc3c94537af35d8e7!2sYaba%2C%20Lagos!5e0!3m2!1sen!2sng!4v1677321528643!5m2!1sen!2sng"
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.577901198539!2d3.2976463147702213!3d6.500365595304958!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103b8edf1cf04881%3A0x3b67b878320ebe54!2sOvercomers%20Church%20World%20Outreach!5e0!3m2!1sen!2sng!4v1688500000000!5m2!1sen!2sng"
                       width="100%" 
                       height="100%" 
                       style={{ border: 0, filter: "contrast(1.1) opacity(0.85) grayscale(0.2)" }} 
