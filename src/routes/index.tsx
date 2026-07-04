@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "motion/react";
+import { useState } from "react";
 import { 
   ArrowUpRight, 
   Flame, 
@@ -14,7 +15,10 @@ import {
   Compass, 
   Heart, 
   ExternalLink,
-  Mail
+  Mail,
+  X,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { Layout, Section, FadeIn } from "@/components/Layout";
 import hero from "@/assets/hero.jpg";
@@ -23,6 +27,64 @@ import word from "@/assets/word.jpg";
 import event from "@/assets/event.jpg";
 import churchCongregation from "@/assets/church_congregation.png";
 import churchTeam from "@/assets/church_team.png";
+import tile1 from "@/assets/tile1.jpg";
+import tile2 from "@/assets/tile2.jpg";
+import tile3 from "@/assets/tile3.jpg";
+import tile4 from "@/assets/tile4.jpg";
+import tile5 from "@/assets/tile5.jpg";
+import tile6 from "@/assets/tile6.jpg";
+import tile7 from "@/assets/tile7.jpg";
+import tile8 from "@/assets/tile8.jpg";
+import tile9 from "@/assets/tile9.jpg";
+import tile10 from "@/assets/tile10.jpg";
+import tile11 from "@/assets/tile11.jpg";
+import tile12 from "@/assets/tile12.jpg";
+import tile13 from "@/assets/tile13.jpg";
+import tile14 from "@/assets/tile14.jpg";
+import tile15 from "@/assets/tile15.jpg";
+import tile16 from "@/assets/tile16.jpg";
+import tile17 from "@/assets/tile17.jpg";
+import tile18 from "@/assets/tile18.jpg";
+
+import tile1Full from "@/assets/tile1_full.jpg";
+import tile2Full from "@/assets/tile2_full.jpg";
+import tile3Full from "@/assets/tile3_full.jpg";
+import tile4Full from "@/assets/tile4_full.jpg";
+import tile5Full from "@/assets/tile5_full.jpg";
+import tile6Full from "@/assets/tile6_full.jpg";
+import tile7Full from "@/assets/tile7_full.jpg";
+import tile8Full from "@/assets/tile8_full.jpg";
+import tile9Full from "@/assets/tile9_full.jpg";
+import tile10Full from "@/assets/tile10_full.jpg";
+import tile11Full from "@/assets/tile11_full.jpg";
+import tile12Full from "@/assets/tile12_full.jpg";
+import tile13Full from "@/assets/tile13_full.jpg";
+import tile14Full from "@/assets/tile14_full.jpg";
+import tile15Full from "@/assets/tile15_full.jpg";
+import tile16Full from "@/assets/tile16_full.jpg";
+import tile17Full from "@/assets/tile17_full.jpg";
+import tile18Full from "@/assets/tile18_full.jpg";
+
+const tiles = [
+  { thumb: tile1, full: tile1Full },
+  { thumb: tile2, full: tile2Full },
+  { thumb: tile3, full: tile3Full },
+  { thumb: tile4, full: tile4Full },
+  { thumb: tile5, full: tile5Full },
+  { thumb: tile6, full: tile6Full },
+  { thumb: tile7, full: tile7Full },
+  { thumb: tile8, full: tile8Full },
+  { thumb: tile9, full: tile9Full },
+  { thumb: tile10, full: tile10Full },
+  { thumb: tile11, full: tile11Full },
+  { thumb: tile12, full: tile12Full },
+  { thumb: tile13, full: tile13Full },
+  { thumb: tile14, full: tile14Full },
+  { thumb: tile15, full: tile15Full },
+  { thumb: tile16, full: tile16Full },
+  { thumb: tile17, full: tile17Full },
+  { thumb: tile18, full: tile18Full }
+];
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -35,6 +97,8 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
+
   return (
     <>
       <Layout>
@@ -112,6 +176,42 @@ function Home() {
                 <Play size={12} className="fill-current" /> Watch Online
               </Link>
             </motion.div>
+          </div>
+        </section>
+
+
+        {/* Horizontal Tiles Grid (Directly after Hero) */}
+        <section className="bg-background overflow-hidden border-b border-border/10">
+          <div className="tiles-grid gap-0">
+            {tiles.map((tile, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: i * 0.03 }}
+                className={`relative aspect-square overflow-hidden group cursor-pointer ${i >= 8 ? 'hidden sm:block' : ''}`}
+                onClick={() => setActiveImageIndex(i)}
+              >
+                <img
+                  src={tile.thumb}
+                  alt={`Youth gathering gallery tile ${i + 1}`}
+                  loading="lazy"
+                  className="w-full h-full object-cover scale-100 group-hover:scale-105 transition-transform duration-700 ease-out"
+                />
+                <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              </motion.div>
+            ))}
+
+            {/* Custom "See More" tile for mobile view only */}
+            <Link
+              to="/gallery"
+              className="relative aspect-square bg-[#0c0a09] border-t border-r border-border/10 flex flex-col items-center justify-center p-4 text-center group cursor-pointer sm:hidden hover:bg-[#14110f] transition-colors duration-500"
+            >
+              <p className="text-[10px] uppercase tracking-[0.25em] text-primary mb-1 font-bold animate-pulse">See More</p>
+              <p className="text-[9px] text-white/70 leading-relaxed max-w-[100px] font-medium group-hover:text-white transition-colors duration-500">
+                Click to see more pictures of amazing people
+              </p>
+            </Link>
           </div>
         </section>
 
@@ -582,6 +682,62 @@ function Home() {
             </FadeIn>
           </div>
         </section>
+
+        {/* Lightbox Modal overlay with next/prev controls */}
+        {activeImageIndex !== null && (
+          <div 
+            className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center backdrop-blur-md transition-all duration-500"
+            onClick={() => setActiveImageIndex(null)}
+          >
+            {/* Close button */}
+            <button 
+              className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-all duration-300 cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                setActiveImageIndex(null);
+              }}
+            >
+              <X size={24} />
+            </button>
+
+            {/* Left navigation arrow */}
+            <button 
+              className="absolute left-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-all duration-300 cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                setActiveImageIndex((prev) => (prev !== null ? (prev - 1 + tiles.length) % tiles.length : null));
+              }}
+            >
+              <ChevronLeft size={24} />
+            </button>
+
+            {/* Main Lightbox Image */}
+            <div 
+              className="relative max-w-[85vw] max-h-[80vh] flex flex-col items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img 
+                src={tiles[activeImageIndex].full} 
+                alt={`Youth gathering high-res preview`} 
+                className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl border border-white/10"
+              />
+              <p className="mt-4 text-xs text-white/50 tracking-widest uppercase font-mono">
+                Image {activeImageIndex + 1} of {tiles.length}
+              </p>
+            </div>
+
+            {/* Right navigation arrow */}
+            <button 
+              className="absolute right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-all duration-300 cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                setActiveImageIndex((prev) => (prev !== null ? (prev + 1) % tiles.length : null));
+              }}
+            >
+              <ChevronRight size={24} />
+            </button>
+          </div>
+        )}
 
       </Layout>
     </>
