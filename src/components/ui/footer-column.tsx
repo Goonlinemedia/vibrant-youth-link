@@ -8,40 +8,8 @@ import {
 } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import logo from '@/assets/logo.jpeg';
-
-const data = {
-  instagramLink: '#',
-  youtubeLink: '#',
-  whatsappLink: '#',
-  about: {
-    history: '/about',
-    team: '/about',
-    handbook: '/resources',
-    careers: '/contact',
-  },
-  help: {
-    faqs: '/resources',
-    support: '/contact',
-    livechat: '/contact',
-  },
-  contact: {
-    email: 'info@youthonfire.org',
-    phone: '+1 (555) 123-4567',
-    address: 'Main Sanctuary, City Church',
-  },
-  company: {
-    name: 'Youth on Fire',
-    description:
-      'A generation set ablaze by the Spirit — pursuing Christ, building community, carrying the flame.',
-    logo: logo,
-  },
-};
-
-const socialLinks = [
-  { icon: Instagram, label: 'Instagram', href: data.instagramLink },
-  { icon: Youtube, label: 'YouTube', href: data.youtubeLink },
-  { icon: MessageCircle, label: 'WhatsApp', href: data.whatsappLink },
-];
+import { useFirestoreCollection } from "@/hooks/useFirestoreCollection";
+import { defaultFooterConfig } from "@/lib/firebase";
 
 const aboutLinks = [
   { text: 'About Us', href: '/about' },
@@ -63,13 +31,22 @@ const helpfulLinks = [
   { text: 'Live Prayer Chat', href: '/contact', hasIndicator: true },
 ];
 
-const contactInfo = [
-  { icon: Mail, text: data.contact.email },
-  { icon: Phone, text: data.contact.phone },
-  { icon: MapPin, text: data.contact.address, isAddress: true },
-];
-
 export default function Footer4Col() {
+  const configs = useFirestoreCollection("footer_config", [defaultFooterConfig]);
+  const footer = configs[0] || defaultFooterConfig;
+
+  const socialLinks = [
+    { icon: Instagram, label: 'Instagram', href: footer.instagram_link || '#' },
+    { icon: Youtube, label: 'YouTube', href: footer.youtube_link || '#' },
+    { icon: MessageCircle, label: 'WhatsApp', href: footer.whatsapp_link || '#' },
+  ];
+
+  const contactInfo = [
+    { icon: Mail, text: footer.contact_email || 'info@youthonfire.org' },
+    { icon: Phone, text: footer.contact_phone || '+1 (555) 123-4567' },
+    { icon: MapPin, text: footer.contact_address || 'Main Sanctuary, City Church', isAddress: true },
+  ];
+
   return (
     <footer className="border-t border-white/5 mt-24 bg-[#090909] text-neutral-200 z-[10] w-full rounded-t-xl relative">
       <div className="mx-auto max-w-7xl px-6 lg:px-10 py-16">
@@ -77,17 +54,17 @@ export default function Footer4Col() {
           <div>
             <div className="text-primary flex justify-center gap-3 sm:justify-start items-center">
               <img
-                src={data.company.logo}
+                src={logo}
                 alt="logo"
                 className="h-10 w-10 rounded-full border border-primary/20"
               />
               <span className="font-display text-xl tracking-[0.15em] uppercase text-neutral-200">
-                {data.company.name}
+                {footer.company_name || 'Youth on Fire'}
               </span>
             </div>
 
             <p className="text-neutral-400 mt-6 max-w-md text-center leading-relaxed text-xs sm:max-w-xs sm:text-left tracking-wider">
-              {data.company.description}
+              {footer.company_description}
             </p>
 
             <ul className="mt-8 flex justify-center gap-6 sm:justify-start md:gap-8">
@@ -202,7 +179,7 @@ export default function Footer4Col() {
             </p>
 
             <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-500 mt-4 sm:order-first sm:mt-0">
-              &copy; {new Date().getFullYear()} {data.company.name}
+              &copy; {new Date().getFullYear()} {footer.company_name || 'Youth on Fire'}
             </p>
           </div>
         </div>

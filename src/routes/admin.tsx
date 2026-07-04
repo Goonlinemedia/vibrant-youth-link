@@ -20,16 +20,18 @@ import {
   defaultBooks,
   defaultRhythms,
   defaultTeam,
-  defaultGallery
+  defaultGallery,
+  defaultHomepageConfig,
+  defaultFooterConfig
 } from "@/lib/firebase";
 import { useFirestoreCollection } from "@/hooks/useFirestoreCollection";
-import { Plus, Edit2, Trash2, LogOut, CheckCircle, AlertCircle, RefreshCw, Mail, Phone, Clock, Users, MapPin } from "lucide-react";
+import { Plus, Edit2, Trash2, LogOut, CheckCircle, AlertCircle, RefreshCw, Mail, Phone, Clock, Users, MapPin, Save, Globe } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
       { title: "Admin Portal — Youth on Fire" },
-      { name: "description", content: "Manage sermons, events, resources, rhythms, team, and photo gallery." },
+      { name: "description", content: "Manage sermons, events, resources, rhythms, team, homepage, and footer settings." },
     ],
   }),
   component: AdminPortal,
@@ -54,9 +56,15 @@ function AdminPortal() {
   const gallery = useFirestoreCollection("gallery", defaultGallery) as any[];
   const registrations = useFirestoreCollection("registrations", []) as any[];
 
+  // Live Config document collections
+  const homepageConfigs = useFirestoreCollection("homepage_config", [defaultHomepageConfig]) as any[];
+  const homepageConfig = homepageConfigs[0] || defaultHomepageConfig;
+  const footerConfigs = useFirestoreCollection("footer_config", [defaultFooterConfig]) as any[];
+  const footerConfig = footerConfigs[0] || defaultFooterConfig;
+
   // Tab state
   const [activeTab, setActiveTab] = useState<
-    "sermons" | "events" | "resources" | "rhythms" | "team" | "gallery" | "registrations"
+    "sermons" | "events" | "resources" | "rhythms" | "team" | "gallery" | "registrations" | "homepage" | "footer"
   >("sermons");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -70,6 +78,10 @@ function AdminPortal() {
   const [teamForm, setTeamForm] = useState({ name: "", role: "" });
   const [galleryForm, setGalleryForm] = useState({ thumb: "", full: "" });
 
+  // Single-config editor forms state
+  const [homepageForm, setHomepageForm] = useState(defaultHomepageConfig);
+  const [footerForm, setFooterForm] = useState(defaultFooterConfig);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -77,6 +89,59 @@ function AdminPortal() {
     });
     return () => unsubscribe();
   }, []);
+
+  // Sync config form states with dynamic Firestore values
+  useEffect(() => {
+    if (homepageConfig) {
+      setHomepageForm({
+        hero_title: homepageConfig.hero_title || "",
+        hero_description: homepageConfig.hero_description || "",
+        hero_time: homepageConfig.hero_time || "",
+        hero_image: homepageConfig.hero_image || "hero",
+        welcome_eyebrow: homepageConfig.welcome_eyebrow || "",
+        welcome_title: homepageConfig.welcome_title || "",
+        welcome_description: homepageConfig.welcome_description || "",
+        welcome_service1_time: homepageConfig.welcome_service1_time || "",
+        welcome_service2_time: homepageConfig.welcome_service2_time || "",
+        welcome_service3_address: homepageConfig.welcome_service3_address || "",
+        about_eyebrow: homepageConfig.about_eyebrow || "",
+        about_title: homepageConfig.about_title || "",
+        about_description: homepageConfig.about_description || "",
+        about_expectation1: homepageConfig.about_expectation1 || "",
+        about_expectation2: homepageConfig.about_expectation2 || "",
+        about_image: homepageConfig.about_image || "churchCongregation",
+        ministries_eyebrow: homepageConfig.ministries_eyebrow || "",
+        ministries_title: homepageConfig.ministries_title || "",
+        ministries_description: homepageConfig.ministries_description || "",
+        featured_event_title: homepageConfig.featured_event_title || "",
+        featured_event_date: homepageConfig.featured_event_date || "",
+        featured_event_place: homepageConfig.featured_event_place || "",
+        featured_event_tag: homepageConfig.featured_event_tag || "",
+        featured_event_image: homepageConfig.featured_event_image || "event",
+        featured_event_bullet1_title: homepageConfig.featured_event_bullet1_title || "",
+        featured_event_bullet1_desc: homepageConfig.featured_event_bullet1_desc || "",
+        featured_event_bullet2_title: homepageConfig.featured_event_bullet2_title || "",
+        featured_event_bullet2_desc: homepageConfig.featured_event_bullet2_desc || "",
+        featured_event_bullet3_title: homepageConfig.featured_event_bullet3_title || "",
+        featured_event_bullet3_desc: homepageConfig.featured_event_bullet3_desc || ""
+      });
+    }
+  }, [homepageConfig]);
+
+  useEffect(() => {
+    if (footerConfig) {
+      setFooterForm({
+        company_name: footerConfig.company_name || "",
+        company_description: footerConfig.company_description || "",
+        instagram_link: footerConfig.instagram_link || "",
+        youtube_link: footerConfig.youtube_link || "",
+        whatsapp_link: footerConfig.whatsapp_link || "",
+        contact_email: footerConfig.contact_email || "",
+        contact_phone: footerConfig.contact_phone || "",
+        contact_address: footerConfig.contact_address || ""
+      });
+    }
+  }, [footerConfig]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,7 +185,7 @@ function AdminPortal() {
     }
   };
 
-  // Edit action triggers
+  // Edit action triggers for listings
   const startEdit = (item: any) => {
     setEditingId(item.id);
     setShowForm(true);
@@ -144,7 +209,7 @@ function AdminPortal() {
     setGalleryForm({ thumb: "", full: "" });
   };
 
-  // Submit edits or adds
+  // Submit list items edits/adds
   const handleCrudSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -200,6 +265,38 @@ function AdminPortal() {
       resetForms();
     } catch (err: any) {
       alert("Error saving item: " + err.message);
+    }
+  };
+
+  // Submit homepage configs
+  const handleSaveHomepageConfig = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (homepageConfig.id) {
+        await updateFirestoreDoc("homepage_config", homepageConfig.id, homepageForm);
+        triggerResetSuccess("Homepage settings updated successfully!");
+      } else {
+        await addFirestoreDoc("homepage_config", homepageForm);
+        triggerResetSuccess("Homepage settings saved successfully!");
+      }
+    } catch (err: any) {
+      alert("Error saving homepage: " + err.message);
+    }
+  };
+
+  // Submit footer configs
+  const handleSaveFooterConfig = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (footerConfig.id) {
+        await updateFirestoreDoc("footer_config", footerConfig.id, footerForm);
+        triggerResetSuccess("Footer settings updated successfully!");
+      } else {
+        await addFirestoreDoc("footer_config", footerForm);
+        triggerResetSuccess("Footer settings saved successfully!");
+      }
+    } catch (err: any) {
+      alert("Error saving footer settings: " + err.message);
     }
   };
 
@@ -351,6 +448,8 @@ function AdminPortal() {
           {/* Left Column Navigation List */}
           <div className="lg:col-span-3 space-y-2">
             {[
+              { id: "homepage", label: "Homepage Content" },
+              { id: "footer", label: "Footer Settings" },
               { id: "sermons", label: "Sermons" },
               { id: "events", label: "Events" },
               { id: "resources", label: "Resources" },
@@ -377,6 +476,18 @@ function AdminPortal() {
 
             <div className="pt-6 border-t border-border/10 mt-6 space-y-3">
               <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold px-4">Database Bootstrap</p>
+              <button
+                onClick={() => handleSeedDefaults("homepage_config", [defaultHomepageConfig])}
+                className="w-full flex items-center justify-between px-4 py-2 text-[10px] text-muted-foreground hover:text-primary transition-all border border-dashed border-border/35 rounded hover:border-primary/45 cursor-pointer uppercase font-mono"
+              >
+                Bootstrap Home <RefreshCw size={10} />
+              </button>
+              <button
+                onClick={() => handleSeedDefaults("footer_config", [defaultFooterConfig])}
+                className="w-full flex items-center justify-between px-4 py-2 text-[10px] text-muted-foreground hover:text-primary transition-all border border-dashed border-border/35 rounded hover:border-primary/45 cursor-pointer uppercase font-mono"
+              >
+                Bootstrap Footer <RefreshCw size={10} />
+              </button>
               <button
                 onClick={() => handleSeedDefaults("sermons", defaultSermons)}
                 className="w-full flex items-center justify-between px-4 py-2 text-[10px] text-muted-foreground hover:text-primary transition-all border border-dashed border-border/35 rounded hover:border-primary/45 cursor-pointer uppercase font-mono"
@@ -424,595 +535,1088 @@ function AdminPortal() {
 
           {/* Right Column details & Forms */}
           <div className="lg:col-span-9 space-y-6">
-            {/* Show Edit or Create Form */}
-            {showForm ? (
-              <div className="bg-card border border-border/10 p-6 rounded-xl space-y-6">
-                <div className="flex justify-between items-center border-b border-border/5 pb-4">
-                  <h4 className="font-display text-xl">{editingId ? "Edit Item" : `Add New ${activeTab.toUpperCase()}`}</h4>
-                  <button
-                    onClick={resetForms}
-                    className="text-xs text-muted-foreground hover:text-foreground transition-all cursor-pointer underline"
-                  >
-                    Cancel
+
+            {/* HOMEPAGE CONFIG TAB */}
+            {activeTab === "homepage" && (
+              <form onSubmit={handleSaveHomepageConfig} className="bg-card border border-border/10 p-6 rounded-xl space-y-8">
+                <div className="flex justify-between items-center border-b border-border/10 pb-4">
+                  <h4 className="font-display text-xl flex items-center gap-2"><Globe size={18} className="text-primary" /> Edit Homepage Copywriting</h4>
+                  <button type="submit" className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-all cursor-pointer">
+                    <Save size={12} /> Save Settings
                   </button>
                 </div>
 
-                <form onSubmit={handleCrudSubmit} className="space-y-4">
-                  {/* Sermons Form Fields */}
-                  {activeTab === "sermons" && (
-                    <>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Title</label>
-                          <input
-                            type="text"
-                            required
-                            value={sermonForm.t}
-                            onChange={(e) => setSermonForm({ ...sermonForm, t: e.target.value })}
-                            className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Preacher</label>
-                          <input
-                            type="text"
-                            required
-                            value={sermonForm.p}
-                            onChange={(e) => setSermonForm({ ...sermonForm, p: e.target.value })}
-                            className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
-                          />
-                        </div>
-                      </div>
-                      <div className="grid md:grid-cols-3 gap-4">
-                        <div>
-                          <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Category</label>
-                          <select
-                            value={sermonForm.c}
-                            onChange={(e) => setSermonForm({ ...sermonForm, c: e.target.value })}
-                            className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
-                          >
-                            {["Faith", "Relationships", "Purpose", "Leadership", "Prayer"].map((cat) => (
-                              <option key={cat} className="bg-card text-foreground">{cat}</option>
-                            ))}
-                          </select>
-                        </div>
-                        <div>
-                          <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Duration (e.g. 42m)</label>
-                          <input
-                            type="text"
-                            required
-                            value={sermonForm.len}
-                            onChange={(e) => setSermonForm({ ...sermonForm, len: e.target.value })}
-                            className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Image Preset or Custom URL</label>
-                          <input
-                            type="text"
-                            required
-                            value={sermonForm.img}
-                            onChange={(e) => setSermonForm({ ...sermonForm, img: e.target.value })}
-                            placeholder="community | word | event | https://url"
-                            className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
-                          />
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {/* Events Form Fields */}
-                  {activeTab === "events" && (
-                    <>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Event Name</label>
-                          <input
-                            type="text"
-                            required
-                            value={eventForm.name}
-                            onChange={(e) => setEventForm({ ...eventForm, name: e.target.value })}
-                            className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Location/Place</label>
-                          <input
-                            type="text"
-                            required
-                            value={eventForm.place}
-                            onChange={(e) => setEventForm({ ...eventForm, place: e.target.value })}
-                            className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
-                          />
-                        </div>
-                      </div>
-                      <div className="grid md:grid-cols-3 gap-4 items-center">
-                        <div>
-                          <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Date & Time</label>
-                          <input
-                            type="datetime-local"
-                            required
-                            value={eventForm.date ? eventForm.date.slice(0, 16) : ""}
-                            onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })}
-                            className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Tag</label>
-                          <select
-                            value={eventForm.tag}
-                            onChange={(e) => setEventForm({ ...eventForm, tag: e.target.value })}
-                            className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
-                          >
-                            {["Camp", "Prayer", "Outreach", "Worship"].map((tag) => (
-                              <option key={tag} className="bg-card text-foreground">{tag}</option>
-                            ))}
-                          </select>
-                        </div>
-                        <div className="flex items-center mt-6">
-                          <input
-                            type="checkbox"
-                            id="featured-checkbox"
-                            checked={eventForm.featured}
-                            onChange={(e) => setEventForm({ ...eventForm, featured: e.target.checked })}
-                            className="mr-3 size-4 rounded accent-primary border border-border"
-                          />
-                          <label htmlFor="featured-checkbox" className="text-xs font-semibold text-foreground select-none cursor-pointer">Featured Event (Timer Focus)</label>
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {/* Resources Form Fields */}
-                  {activeTab === "resources" && (
-                    <>
-                      <div className="grid md:grid-cols-3 gap-4">
-                        <div className="md:col-span-2">
-                          <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Resource Title</label>
-                          <input
-                            type="text"
-                            required
-                            value={resourceForm.t}
-                            onChange={(e) => setResourceForm({ ...resourceForm, t: e.target.value })}
-                            className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Tag/Format</label>
-                          <input
-                            type="text"
-                            required
-                            value={resourceForm.tag}
-                            onChange={(e) => setResourceForm({ ...resourceForm, tag: e.target.value })}
-                            placeholder="PDF | Read | Plan | Path"
-                            className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
-                          />
-                        </div>
-                      </div>
-                      <div className="grid md:grid-cols-3 gap-4">
-                        <div className="md:col-span-2">
-                          <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Description</label>
-                          <input
-                            type="text"
-                            required
-                            value={resourceForm.d}
-                            onChange={(e) => setResourceForm({ ...resourceForm, d: e.target.value })}
-                            className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Lucide Icon name</label>
-                          <select
-                            value={resourceForm.icon}
-                            onChange={(e) => setResourceForm({ ...resourceForm, icon: e.target.value })}
-                            className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
-                          >
-                            {["BookOpen", "FileText", "Flame", "Compass"].map((i) => (
-                              <option key={i} className="bg-card text-foreground">{i}</option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {/* Weekly Rhythms Fields */}
-                  {activeTab === "rhythms" && (
-                    <div className="grid md:grid-cols-3 gap-4">
-                      <div>
-                        <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Day</label>
-                        <input
-                          type="text"
-                          required
-                          value={rhythmForm.day}
-                          onChange={(e) => setRhythmForm({ ...rhythmForm, day: e.target.value })}
-                          className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Activity Name</label>
-                        <input
-                          type="text"
-                          required
-                          value={rhythmForm.name}
-                          onChange={(e) => setRhythmForm({ ...rhythmForm, name: e.target.value })}
-                          className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Time Details</label>
-                        <input
-                          type="text"
-                          required
-                          value={rhythmForm.time}
-                          onChange={(e) => setRhythmForm({ ...rhythmForm, time: e.target.value })}
-                          className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
-                        />
-                      </div>
+                {/* Section 1: Hero Settings */}
+                <div className="space-y-4">
+                  <h5 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-border/5 pb-1">1. Hero Banner Settings</h5>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Hero Title</label>
+                      <input
+                        type="text"
+                        required
+                        value={homepageForm.hero_title}
+                        onChange={(e) => setHomepageForm({ ...homepageForm, hero_title: e.target.value })}
+                        className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                      />
                     </div>
-                  )}
-
-                  {/* Leadership Team Fields */}
-                  {activeTab === "team" && (
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Name</label>
-                        <input
-                          type="text"
-                          required
-                          value={teamForm.name}
-                          onChange={(e) => setTeamForm({ ...teamForm, name: e.target.value })}
-                          className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Role/Position</label>
-                        <input
-                          type="text"
-                          required
-                          value={teamForm.role}
-                          onChange={(e) => setTeamForm({ ...teamForm, role: e.target.value })}
-                          className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
-                        />
-                      </div>
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Worship Service Subtitle (e.g. Sunday Worship • 8:00 AM)</label>
+                      <input
+                        type="text"
+                        required
+                        value={homepageForm.hero_time}
+                        onChange={(e) => setHomepageForm({ ...homepageForm, hero_time: e.target.value })}
+                        className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                      />
                     </div>
-                  )}
-
-                  {/* Photo Gallery Fields */}
-                  {activeTab === "gallery" && (
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Thumbnail Path/URL</label>
-                        <input
-                          type="text"
-                          required
-                          value={galleryForm.thumb}
-                          onChange={(e) => setGalleryForm({ ...galleryForm, thumb: e.target.value })}
-                          placeholder="/gallery/g1.jpg | https://url"
-                          className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">High-Res / Full-Size URL</label>
-                        <input
-                          type="text"
-                          required
-                          value={galleryForm.full}
-                          onChange={(e) => setGalleryForm({ ...galleryForm, full: e.target.value })}
-                          placeholder="/gallery/g1_full.jpg | https://url"
-                          className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex gap-3 justify-end pt-4 border-t border-border/5">
-                    <button
-                      type="button"
-                      onClick={resetForms}
-                      className="px-4 py-2 rounded-lg border border-border/30 text-xs uppercase tracking-wider font-semibold hover:border-foreground/20 text-muted-foreground transition-all cursor-pointer"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      className="bg-primary text-primary-foreground px-6 py-2 rounded-lg text-xs uppercase tracking-widest font-bold hover:bg-primary/95 transition-all cursor-pointer"
-                    >
-                      Save Changes
-                    </button>
                   </div>
-                </form>
-              </div>
-            ) : (
-              activeTab !== "registrations" ? (
-                <div className="flex justify-between items-center bg-card/30 border border-border/10 p-4 rounded-xl">
-                  <p className="text-xs text-muted-foreground">Manage your list of items or add a new record.</p>
-                  {activeTab !== "resources" ? (
-                    <button
-                      onClick={() => setShowForm(true)}
-                      className="flex items-center gap-1.5 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-primary/95 transition-all cursor-pointer"
-                    >
-                      <Plus size={14} /> Add Item
-                    </button>
-                  ) : (
-                    <div className="text-xs text-muted-foreground">Add resources below (books have a separate form)</div>
-                  )}
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Hero Image Preset/URL</label>
+                      <input
+                        type="text"
+                        required
+                        value={homepageForm.hero_image}
+                        onChange={(e) => setHomepageForm({ ...homepageForm, hero_image: e.target.value })}
+                        placeholder="hero | custom url"
+                        className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Hero Short Description</label>
+                      <textarea
+                        required
+                        rows={2}
+                        value={homepageForm.hero_description}
+                        onChange={(e) => setHomepageForm({ ...homepageForm, hero_description: e.target.value })}
+                        className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none resize-none"
+                      />
+                    </div>
+                  </div>
                 </div>
-              ) : (
-                <div className="bg-card/30 border border-border/10 p-4 rounded-xl text-xs text-muted-foreground">
-                  User registrations submitted on the Contact page. Database items update in real time.
+
+                {/* Section 2: Invitation & Cards */}
+                <div className="space-y-4">
+                  <h5 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-border/5 pb-1">2. Welcome & Cards Section</h5>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Eyebrow text</label>
+                      <input
+                        type="text"
+                        required
+                        value={homepageForm.welcome_eyebrow}
+                        onChange={(e) => setHomepageForm({ ...homepageForm, welcome_eyebrow: e.target.value })}
+                        className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Welcome Title</label>
+                      <input
+                        type="text"
+                        required
+                        value={homepageForm.welcome_title}
+                        onChange={(e) => setHomepageForm({ ...homepageForm, welcome_title: e.target.value })}
+                        className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Sunday Card Worship Time</label>
+                      <input
+                        type="text"
+                        required
+                        value={homepageForm.welcome_service1_time}
+                        onChange={(e) => setHomepageForm({ ...homepageForm, welcome_service1_time: e.target.value })}
+                        className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Wednesday Fellowship Time</label>
+                      <input
+                        type="text"
+                        required
+                        value={homepageForm.welcome_service2_time}
+                        onChange={(e) => setHomepageForm({ ...homepageForm, welcome_service2_time: e.target.value })}
+                        className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Full Sanctuary Address details</label>
+                      <input
+                        type="text"
+                        required
+                        value={homepageForm.welcome_service3_address}
+                        onChange={(e) => setHomepageForm({ ...homepageForm, welcome_service3_address: e.target.value })}
+                        className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Invitation Long Paragraph Description</label>
+                    <textarea
+                      required
+                      rows={3}
+                      value={homepageForm.welcome_description}
+                      onChange={(e) => setHomepageForm({ ...homepageForm, welcome_description: e.target.value })}
+                      className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none resize-none"
+                    />
+                  </div>
                 </div>
-              )
+
+                {/* Section 3: Who We Are */}
+                <div className="space-y-4">
+                  <h5 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-border/5 pb-1">3. Who We Are Section</h5>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Who We Are Eyebrow</label>
+                      <input
+                        type="text"
+                        required
+                        value={homepageForm.about_eyebrow}
+                        onChange={(e) => setHomepageForm({ ...homepageForm, about_eyebrow: e.target.value })}
+                        className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">About Title</label>
+                      <input
+                        type="text"
+                        required
+                        value={homepageForm.about_title}
+                        onChange={(e) => setHomepageForm({ ...homepageForm, about_title: e.target.value })}
+                        className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Expectations Item 1 (e.g. What to Expect: Casual dress...)</label>
+                      <input
+                        type="text"
+                        required
+                        value={homepageForm.about_expectation1}
+                        onChange={(e) => setHomepageForm({ ...homepageForm, about_expectation1: e.target.value })}
+                        className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Values Item 2 (e.g. Our Values: Word-centered...)</label>
+                      <input
+                        type="text"
+                        required
+                        value={homepageForm.about_expectation2}
+                        onChange={(e) => setHomepageForm({ ...homepageForm, about_expectation2: e.target.value })}
+                        className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">About Image Preset/URL</label>
+                      <input
+                        type="text"
+                        required
+                        value={homepageForm.about_image}
+                        onChange={(e) => setHomepageForm({ ...homepageForm, about_image: e.target.value })}
+                        placeholder="churchCongregation | custom url"
+                        className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Who We Are Description</label>
+                      <textarea
+                        required
+                        rows={3}
+                        value={homepageForm.about_description}
+                        onChange={(e) => setHomepageForm({ ...homepageForm, about_description: e.target.value })}
+                        className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none resize-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 4: Ministries Content */}
+                <div className="space-y-4">
+                  <h5 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-border/5 pb-1">4. Ministries Segment Copy</h5>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Ministries Eyebrow</label>
+                      <input
+                        type="text"
+                        required
+                        value={homepageForm.ministries_eyebrow}
+                        onChange={(e) => setHomepageForm({ ...homepageForm, ministries_eyebrow: e.target.value })}
+                        className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Ministries Title</label>
+                      <input
+                        type="text"
+                        required
+                        value={homepageForm.ministries_title}
+                        onChange={(e) => setHomepageForm({ ...homepageForm, ministries_title: e.target.value })}
+                        className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Ministries Description</label>
+                      <input
+                        type="text"
+                        required
+                        value={homepageForm.ministries_description}
+                        onChange={(e) => setHomepageForm({ ...homepageForm, ministries_description: e.target.value })}
+                        className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 5: Gathering Spotlight & Camp */}
+                <div className="space-y-4">
+                  <h5 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-border/5 pb-1">5. Gathering Spotlight (Featured Camp)</h5>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Featured Event Title</label>
+                      <input
+                        type="text"
+                        required
+                        value={homepageForm.featured_event_title}
+                        onChange={(e) => setHomepageForm({ ...homepageForm, featured_event_title: e.target.value })}
+                        className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Featured Event Date Tag</label>
+                      <input
+                        type="text"
+                        required
+                        value={homepageForm.featured_event_tag}
+                        onChange={(e) => setHomepageForm({ ...homepageForm, featured_event_tag: e.target.value })}
+                        className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Spotlight Image Preset/URL</label>
+                      <input
+                        type="text"
+                        required
+                        value={homepageForm.featured_event_image}
+                        onChange={(e) => setHomepageForm({ ...homepageForm, featured_event_image: e.target.value })}
+                        placeholder="event | custom url"
+                        className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Camp Description details</label>
+                    <textarea
+                      required
+                      rows={2}
+                      value={homepageForm.featured_event_place}
+                      onChange={(e) => setHomepageForm({ ...homepageForm, featured_event_place: e.target.value })}
+                      className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none resize-none"
+                    />
+                  </div>
+
+                  {/* Bullet Highlights */}
+                  <div className="grid md:grid-cols-3 gap-4 border-t border-border/5 pt-4">
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-1">Bullet 1 Title</label>
+                        <input
+                          type="text"
+                          required
+                          value={homepageForm.featured_event_bullet1_title}
+                          onChange={(e) => setHomepageForm({ ...homepageForm, featured_event_bullet1_title: e.target.value })}
+                          className="w-full bg-card/25 border border-border/40 rounded px-2 py-1 text-xs text-foreground focus:border-primary outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-1">Bullet 1 Description</label>
+                        <input
+                          type="text"
+                          required
+                          value={homepageForm.featured_event_bullet1_desc}
+                          onChange={(e) => setHomepageForm({ ...homepageForm, featured_event_bullet1_desc: e.target.value })}
+                          className="w-full bg-card/25 border border-border/40 rounded px-2 py-1 text-xs text-foreground focus:border-primary outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-1">Bullet 2 Title</label>
+                        <input
+                          type="text"
+                          required
+                          value={homepageForm.featured_event_bullet2_title}
+                          onChange={(e) => setHomepageForm({ ...homepageForm, featured_event_bullet2_title: e.target.value })}
+                          className="w-full bg-card/25 border border-border/40 rounded px-2 py-1 text-xs text-foreground focus:border-primary outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-1">Bullet 2 Description</label>
+                        <input
+                          type="text"
+                          required
+                          value={homepageForm.featured_event_bullet2_desc}
+                          onChange={(e) => setHomepageForm({ ...homepageForm, featured_event_bullet2_desc: e.target.value })}
+                          className="w-full bg-card/25 border border-border/40 rounded px-2 py-1 text-xs text-foreground focus:border-primary outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-1">Bullet 3 Title</label>
+                        <input
+                          type="text"
+                          required
+                          value={homepageForm.featured_event_bullet3_title}
+                          onChange={(e) => setHomepageForm({ ...homepageForm, featured_event_bullet3_title: e.target.value })}
+                          className="w-full bg-card/25 border border-border/40 rounded px-2 py-1 text-xs text-foreground focus:border-primary outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-1">Bullet 3 Description</label>
+                        <input
+                          type="text"
+                          required
+                          value={homepageForm.featured_event_bullet3_desc}
+                          onChange={(e) => setHomepageForm({ ...homepageForm, featured_event_bullet3_desc: e.target.value })}
+                          className="w-full bg-card/25 border border-border/40 rounded px-2 py-1 text-xs text-foreground focus:border-primary outline-none"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-4 border-t border-border/10">
+                  <button type="submit" className="flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-all cursor-pointer">
+                    <Save size={12} /> Save Settings
+                  </button>
+                </div>
+              </form>
             )}
 
-            {/* List & Edit existing items in the current collection */}
-            <div className="bg-card/40 backdrop-blur border border-border/10 rounded-xl overflow-hidden shadow-sm">
-              <div className="p-4 border-b border-border/10 bg-card/20 flex items-center justify-between">
-                <h4 className="text-xs font-bold uppercase tracking-widest text-primary">Current Entries</h4>
-                <span className="text-[10px] bg-primary/10 text-primary px-2.5 py-0.5 rounded-full font-mono uppercase font-bold">
-                  {activeTab === "sermons" && `${sermons.length} sermons`}
-                  {activeTab === "events" && `${events.length} events`}
-                  {activeTab === "resources" && `${resources.length} resources, ${books.length} books`}
-                  {activeTab === "rhythms" && `${rhythms.length} rhythm nodes`}
-                  {activeTab === "team" && `${team.length} leaders`}
-                  {activeTab === "gallery" && `${gallery.length} photos`}
-                  {activeTab === "registrations" && `${registrations.length} registrations`}
-                </span>
-              </div>
+            {/* FOOTER CONFIG TAB */}
+            {activeTab === "footer" && (
+              <form onSubmit={handleSaveFooterConfig} className="bg-card border border-border/10 p-6 rounded-xl space-y-8">
+                <div className="flex justify-between items-center border-b border-border/10 pb-4">
+                  <h4 className="font-display text-xl flex items-center gap-2"><Mail size={18} className="text-primary" /> Edit Footer & Social Settings</h4>
+                  <button type="submit" className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-all cursor-pointer">
+                    <Save size={12} /> Save Settings
+                  </button>
+                </div>
 
-              {/* SERMONS LISTING */}
-              {activeTab === "sermons" && (
-                <div className="divide-y divide-border/5">
-                  {sermons.map((s) => (
-                    <div key={s.id || s.t} className="p-4 flex items-center justify-between hover:bg-card/10 transition-all gap-4">
+                <div className="space-y-6">
+                  {/* Branding Group */}
+                  <div className="space-y-4">
+                    <h5 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-border/5 pb-1">Branding</h5>
+                    <div className="grid md:grid-cols-2 gap-4">
                       <div>
-                        <p className="font-semibold text-foreground text-sm">{s.t}</p>
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">{s.p} · {s.c} · {s.len} · {s.img}</p>
+                        <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Company Name (Copyright)</label>
+                        <input
+                          type="text"
+                          required
+                          value={footerForm.company_name}
+                          onChange={(e) => setFooterForm({ ...footerForm, company_name: e.target.value })}
+                          className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                        />
                       </div>
-                      <div className="flex gap-2 shrink-0">
-                        <button onClick={() => startEdit(s)} className="p-2 border border-border/30 hover:border-primary/40 rounded text-foreground/70 hover:text-primary transition-all cursor-pointer"><Edit2 size={12} /></button>
-                        {s.id && (
-                          <button onClick={() => handleDeleteItem("sermons", s.id)} className="p-2 border border-border/30 hover:border-destructive/40 rounded text-foreground/70 hover:text-destructive transition-all cursor-pointer"><Trash2 size={12} /></button>
-                        )}
+                      <div>
+                        <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Short Company Description</label>
+                        <input
+                          type="text"
+                          required
+                          value={footerForm.company_description}
+                          onChange={(e) => setFooterForm({ ...footerForm, company_description: e.target.value })}
+                          className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                        />
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-
-              {/* EVENTS LISTING */}
-              {activeTab === "events" && (
-                <div className="divide-y divide-border/5">
-                  {events.map((e) => (
-                    <div key={e.id || e.name} className="p-4 flex items-center justify-between hover:bg-card/10 transition-all gap-4">
-                      <div>
-                        <p className="font-semibold text-foreground text-sm">
-                          {e.name} {e.featured && <span className="ml-2 text-[9px] uppercase tracking-widest bg-primary/20 text-primary font-bold px-1.5 py-0.5 rounded">Featured</span>}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">{new Date(e.date).toLocaleString()} · {e.place} · {e.tag}</p>
-                      </div>
-                      <div className="flex gap-2 shrink-0">
-                        <button onClick={() => startEdit(e)} className="p-2 border border-border/30 hover:border-primary/40 rounded text-foreground/70 hover:text-primary transition-all cursor-pointer"><Edit2 size={12} /></button>
-                        {e.id && (
-                          <button onClick={() => handleDeleteItem("events", e.id)} className="p-2 border border-border/30 hover:border-destructive/40 rounded text-foreground/70 hover:text-destructive transition-all cursor-pointer"><Trash2 size={12} /></button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* RESOURCES LISTING */}
-              {activeTab === "resources" && (
-                <div className="divide-y divide-border/5">
-                  <div className="p-4 bg-muted/20 text-xs font-bold uppercase tracking-wider border-b border-border/10 text-muted-foreground flex justify-between items-center">
-                    <span>Downloads</span>
-                    <button onClick={() => { resetForms(); setShowForm(true); }} className="text-[10px] text-primary hover:underline cursor-pointer uppercase font-bold">Add Download</button>
                   </div>
-                  {resources.map((r) => (
-                    <div key={r.id || r.t} className="p-4 flex items-center justify-between hover:bg-card/10 transition-all gap-4">
+
+                  {/* Social Links Group */}
+                  <div className="space-y-4">
+                    <h5 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-border/5 pb-1">Social Links</h5>
+                    <div className="grid md:grid-cols-3 gap-4">
                       <div>
-                        <p className="font-semibold text-foreground text-sm">{r.t}</p>
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">{r.tag} · {r.icon} · {r.d}</p>
+                        <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Instagram Link</label>
+                        <input
+                          type="text"
+                          required
+                          value={footerForm.instagram_link}
+                          onChange={(e) => setFooterForm({ ...footerForm, instagram_link: e.target.value })}
+                          className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                        />
                       </div>
-                      <div className="flex gap-2 shrink-0">
-                        <button onClick={() => startEdit(r)} className="p-2 border border-border/30 hover:border-primary/40 rounded text-foreground/70 hover:text-primary transition-all cursor-pointer"><Edit2 size={12} /></button>
-                        {r.id && (
-                          <button onClick={() => handleDeleteItem("resources", r.id)} className="p-2 border border-border/30 hover:border-destructive/40 rounded text-foreground/70 hover:text-destructive transition-all cursor-pointer"><Trash2 size={12} /></button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-
-                  <div className="p-4 bg-muted/20 text-xs font-bold uppercase tracking-wider border-t border-b border-border/10 text-muted-foreground">Recommended Books</div>
-                  
-                  {/* Add book form inline */}
-                  <form onSubmit={handleAddBook} className="p-4 bg-card/10 border-b border-border/5 grid md:grid-cols-3 gap-3 items-end">
-                    <div>
-                      <label className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-1">Book Title</label>
-                      <input
-                        type="text"
-                        required
-                        value={bookForm.title}
-                        onChange={(e) => setBookForm({ ...bookForm, title: e.target.value })}
-                        className="w-full bg-card/25 border border-border/40 rounded px-2.5 py-1.5 text-xs text-foreground focus:border-primary outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-1">Author</label>
-                      <input
-                        type="text"
-                        required
-                        value={bookForm.author}
-                        onChange={(e) => setBookForm({ ...bookForm, author: e.target.value })}
-                        className="w-full bg-card/25 border border-border/40 rounded px-2.5 py-1.5 text-xs text-foreground focus:border-primary outline-none"
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      className="bg-primary text-primary-foreground py-1.5 rounded text-[10px] font-bold uppercase tracking-wider hover:bg-primary/95 cursor-pointer h-[34px]"
-                    >
-                      Add Book
-                    </button>
-                  </form>
-
-                  {books.map((b) => (
-                    <div key={b.id || b.title} className="p-4 flex items-center justify-between hover:bg-card/10 transition-all gap-4">
                       <div>
-                        <p className="font-semibold text-foreground text-sm">{b.title}</p>
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">Author: {b.author}</p>
+                        <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">YouTube Link</label>
+                        <input
+                          type="text"
+                          required
+                          value={footerForm.youtube_link}
+                          onChange={(e) => setFooterForm({ ...footerForm, youtube_link: e.target.value })}
+                          className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                        />
                       </div>
-                      <div className="flex gap-2 shrink-0">
-                        {b.id && (
-                          <button onClick={() => handleDeleteItem("recommended_books", b.id)} className="p-2 border border-border/30 hover:border-destructive/40 rounded text-foreground/70 hover:text-destructive transition-all cursor-pointer"><Trash2 size={12} /></button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* RHYTHM LISTING */}
-              {activeTab === "rhythms" && (
-                <div className="divide-y divide-border/5">
-                  {rhythms.map((r) => (
-                    <div key={r.id || r.day} className="p-4 flex items-center justify-between hover:bg-card/10 transition-all gap-4">
                       <div>
-                        <p className="font-semibold text-foreground text-sm">{r.day} — {r.name}</p>
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">Gathering Time: {r.time}</p>
-                      </div>
-                      <div className="flex gap-2 shrink-0">
-                        <button onClick={() => startEdit(r)} className="p-2 border border-border/30 hover:border-primary/40 rounded text-foreground/70 hover:text-primary transition-all cursor-pointer"><Edit2 size={12} /></button>
-                        {r.id && (
-                          <button onClick={() => handleDeleteItem("weekly_rhythm", r.id)} className="p-2 border border-border/30 hover:border-destructive/40 rounded text-foreground/70 hover:text-destructive transition-all cursor-pointer"><Trash2 size={12} /></button>
-                        )}
+                        <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">WhatsApp Link</label>
+                        <input
+                          type="text"
+                          required
+                          value={footerForm.whatsapp_link}
+                          onChange={(e) => setFooterForm({ ...footerForm, whatsapp_link: e.target.value })}
+                          className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                        />
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
+                  </div>
 
-              {/* LEADERSHIP LISTING */}
-              {activeTab === "team" && (
-                <div className="divide-y divide-border/5">
-                  {team.map((t) => (
-                    <div key={t.id || t.name} className="p-4 flex items-center justify-between hover:bg-card/10 transition-all gap-4">
+                  {/* Contact Info Group */}
+                  <div className="space-y-4">
+                    <h5 className="text-xs font-bold uppercase tracking-wider text-primary border-b border-border/5 pb-1">Contact Information</h5>
+                    <div className="grid md:grid-cols-3 gap-4">
                       <div>
-                        <p className="font-semibold text-foreground text-sm">{t.name}</p>
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">Role: {t.role}</p>
+                        <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Contact Email</label>
+                        <input
+                          type="email"
+                          required
+                          value={footerForm.contact_email}
+                          onChange={(e) => setFooterForm({ ...footerForm, contact_email: e.target.value })}
+                          className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                        />
                       </div>
-                      <div className="flex gap-2 shrink-0">
-                        <button onClick={() => startEdit(t)} className="p-2 border border-border/30 hover:border-primary/40 rounded text-foreground/70 hover:text-primary transition-all cursor-pointer"><Edit2 size={12} /></button>
-                        {t.id && (
-                          <button onClick={() => handleDeleteItem("leadership_team", t.id)} className="p-2 border border-border/30 hover:border-destructive/40 rounded text-foreground/70 hover:text-destructive transition-all cursor-pointer"><Trash2 size={12} /></button>
-                        )}
+                      <div>
+                        <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Contact Phone</label>
+                        <input
+                          type="text"
+                          required
+                          value={footerForm.contact_phone}
+                          onChange={(e) => setFooterForm({ ...footerForm, contact_phone: e.target.value })}
+                          className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                        />
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* GALLERY LISTING */}
-              {activeTab === "gallery" && (
-                <div className="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-[60vh] overflow-y-auto">
-                  {gallery.map((tile, i) => (
-                    <div key={tile.id || i} className="group relative border border-border/10 rounded-lg overflow-hidden bg-card aspect-square">
-                      <img src={tile.thumb} alt="" className="w-full h-full object-cover opacity-80" />
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-all">
-                        <button
-                          onClick={() => startEdit(tile)}
-                          className="bg-primary/95 text-primary-foreground p-2 rounded hover:scale-105 transition-all cursor-pointer"
-                          title="Edit link"
-                        >
-                          <Edit2 size={12} />
-                        </button>
-                        {tile.id && (
-                          <button
-                            onClick={() => handleDeleteItem("gallery", tile.id)}
-                            className="bg-destructive/95 text-destructive-foreground p-2 rounded hover:scale-105 transition-all cursor-pointer"
-                            title="Delete picture"
-                          >
-                            <Trash2 size={12} />
-                          </button>
-                        )}
+                      <div>
+                        <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Contact Address</label>
+                        <input
+                          type="text"
+                          required
+                          value={footerForm.contact_address}
+                          onChange={(e) => setFooterForm({ ...footerForm, contact_address: e.target.value })}
+                          className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                        />
                       </div>
                     </div>
-                  ))}
+                  </div>
                 </div>
-              )}
 
-              {/* REGISTRATIONS LISTING */}
-              {activeTab === "registrations" && (
-                <div className="p-4 space-y-4 max-h-[70vh] overflow-y-auto bg-card/20">
-                  {registrations.length === 0 ? (
-                    <p className="text-xs text-muted-foreground text-center py-10">No registrations found in the database.</p>
-                  ) : (
-                    registrations.map((reg) => (
-                      <div key={reg.id} className="bg-card/65 border border-border/10 p-5 rounded-xl space-y-4 hover:border-primary/20 transition-all">
-                        <div className="flex justify-between items-start border-b border-border/5 pb-2">
+                <div className="flex justify-end pt-4 border-t border-border/10">
+                  <button type="submit" className="flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-all cursor-pointer">
+                    <Save size={12} /> Save Settings
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* OTHER CRUD LISTING TABS */}
+            {activeTab !== "homepage" && activeTab !== "footer" && (
+              <>
+                {/* Show Edit or Create Form */}
+                {showForm ? (
+                  <div className="bg-card border border-border/10 p-6 rounded-xl space-y-6">
+                    <div className="flex justify-between items-center border-b border-border/5 pb-4">
+                      <h4 className="font-display text-xl">{editingId ? "Edit Item" : `Add New ${activeTab.toUpperCase()}`}</h4>
+                      <button
+                        onClick={resetForms}
+                        className="text-xs text-muted-foreground hover:text-foreground transition-all cursor-pointer underline"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+
+                    <form onSubmit={handleCrudSubmit} className="space-y-4">
+                      {/* Sermons Form Fields */}
+                      {activeTab === "sermons" && (
+                        <>
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Title</label>
+                              <input
+                                type="text"
+                                required
+                                value={sermonForm.t}
+                                onChange={(e) => setSermonForm({ ...sermonForm, t: e.target.value })}
+                                className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Preacher</label>
+                              <input
+                                type="text"
+                                required
+                                value={sermonForm.p}
+                                onChange={(e) => setSermonForm({ ...sermonForm, p: e.target.value })}
+                                className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                              />
+                            </div>
+                          </div>
+                          <div className="grid md:grid-cols-3 gap-4">
+                            <div>
+                              <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Category</label>
+                              <select
+                                value={sermonForm.c}
+                                onChange={(e) => setSermonForm({ ...sermonForm, c: e.target.value })}
+                                className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                              >
+                                {["Faith", "Relationships", "Purpose", "Leadership", "Prayer"].map((cat) => (
+                                  <option key={cat} className="bg-card text-foreground">{cat}</option>
+                                ))}
+                              </select>
+                            </div>
+                            <div>
+                              <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Duration (e.g. 42m)</label>
+                              <input
+                                type="text"
+                                required
+                                value={sermonForm.len}
+                                onChange={(e) => setSermonForm({ ...sermonForm, len: e.target.value })}
+                                className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Image Preset or Custom URL</label>
+                              <input
+                                type="text"
+                                required
+                                value={sermonForm.img}
+                                onChange={(e) => setSermonForm({ ...sermonForm, img: e.target.value })}
+                                placeholder="community | word | event | https://url"
+                                className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                              />
+                            </div>
+                          </div>
+                        </>
+                      )}
+
+                      {/* Events Form Fields */}
+                      {activeTab === "events" && (
+                        <>
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Event Name</label>
+                              <input
+                                type="text"
+                                required
+                                value={eventForm.name}
+                                onChange={(e) => setEventForm({ ...eventForm, name: e.target.value })}
+                                className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Location/Place</label>
+                              <input
+                                type="text"
+                                required
+                                value={eventForm.place}
+                                onChange={(e) => setEventForm({ ...eventForm, place: e.target.value })}
+                                className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                              />
+                            </div>
+                          </div>
+                          <div className="grid md:grid-cols-3 gap-4 items-center">
+                            <div>
+                              <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Date & Time</label>
+                              <input
+                                type="datetime-local"
+                                required
+                                value={eventForm.date ? eventForm.date.slice(0, 16) : ""}
+                                onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })}
+                                className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Tag</label>
+                              <select
+                                value={eventForm.tag}
+                                onChange={(e) => setEventForm({ ...eventForm, tag: e.target.value })}
+                                className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                              >
+                                {["Camp", "Prayer", "Outreach", "Worship"].map((tag) => (
+                                  <option key={tag} className="bg-card text-foreground">{tag}</option>
+                                ))}
+                              </select>
+                            </div>
+                            <div className="flex items-center mt-6">
+                              <input
+                                type="checkbox"
+                                id="featured-checkbox"
+                                checked={eventForm.featured}
+                                onChange={(e) => setEventForm({ ...eventForm, featured: e.target.checked })}
+                                className="mr-3 size-4 rounded accent-primary border border-border"
+                              />
+                              <label htmlFor="featured-checkbox" className="text-xs font-semibold text-foreground select-none cursor-pointer">Featured Event (Timer Focus)</label>
+                            </div>
+                          </div>
+                        </>
+                      )}
+
+                      {/* Resources Form Fields */}
+                      {activeTab === "resources" && (
+                        <>
+                          <div className="grid md:grid-cols-3 gap-4">
+                            <div className="md:col-span-2">
+                              <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Resource Title</label>
+                              <input
+                                type="text"
+                                required
+                                value={resourceForm.t}
+                                onChange={(e) => setResourceForm({ ...resourceForm, t: e.target.value })}
+                                className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Tag/Format</label>
+                              <input
+                                type="text"
+                                required
+                                value={resourceForm.tag}
+                                onChange={(e) => setResourceForm({ ...resourceForm, tag: e.target.value })}
+                                placeholder="PDF | Read | Plan | Path"
+                                className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                              />
+                            </div>
+                          </div>
+                          <div className="grid md:grid-cols-3 gap-4">
+                            <div className="md:col-span-2">
+                              <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Description</label>
+                              <input
+                                type="text"
+                                required
+                                value={resourceForm.d}
+                                onChange={(e) => setResourceForm({ ...resourceForm, d: e.target.value })}
+                                className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Lucide Icon name</label>
+                              <select
+                                value={resourceForm.icon}
+                                onChange={(e) => setResourceForm({ ...resourceForm, icon: e.target.value })}
+                                className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                              >
+                                {["BookOpen", "FileText", "Flame", "Compass"].map((i) => (
+                                  <option key={i} className="bg-card text-foreground">{i}</option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+                        </>
+                      )}
+
+                      {/* Weekly Rhythms Fields */}
+                      {activeTab === "rhythms" && (
+                        <div className="grid md:grid-cols-3 gap-4">
                           <div>
-                            <h5 className="font-semibold text-foreground text-base">{reg.name}</h5>
-                            <p className="text-[10px] text-primary/80 uppercase tracking-wider font-mono mt-0.5">
-                              {reg.ageRange ? `${reg.ageRange} years` : "Age N/A"} · {reg.gender || "Gender N/A"}
-                            </p>
+                            <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Day</label>
+                            <input
+                              type="text"
+                              required
+                              value={rhythmForm.day}
+                              onChange={(e) => setRhythmForm({ ...rhythmForm, day: e.target.value })}
+                              className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                            />
                           </div>
-                          <button
-                            onClick={() => handleDeleteItem("registrations", reg.id)}
-                            className="text-muted-foreground hover:text-destructive p-1 border border-border/20 hover:border-destructive/30 rounded transition-all cursor-pointer"
-                            title="Delete record"
-                          >
-                            <Trash2 size={12} />
-                          </button>
-                        </div>
-
-                        <div className="grid md:grid-cols-2 gap-4 text-xs">
-                          {/* Contact Details */}
-                          <div className="space-y-2">
-                            <p className="flex items-center gap-2 text-muted-foreground">
-                              <Mail size={12} className="text-primary shrink-0" />
-                              <a href={`mailto:${reg.email}`} className="hover:underline hover:text-foreground">{reg.email}</a>
-                            </p>
-                            <p className="flex items-center gap-2 text-muted-foreground">
-                              <Phone size={12} className="text-primary shrink-0" />
-                              <a href={`tel:${reg.phone}`} className="hover:underline hover:text-foreground">{reg.phone}</a>
-                            </p>
-                            <p className="flex items-center gap-2 text-muted-foreground">
-                              <Clock size={12} className="text-primary shrink-0" />
-                              <span>Registered: {reg.createdAt ? new Date(reg.createdAt).toLocaleString() : "Date N/A"}</span>
-                            </p>
+                          <div>
+                            <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Activity Name</label>
+                            <input
+                              type="text"
+                              required
+                              value={rhythmForm.name}
+                              onChange={(e) => setRhythmForm({ ...rhythmForm, name: e.target.value })}
+                              className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                            />
                           </div>
-
-                          {/* Attendance Info */}
-                          <div className="space-y-2 border-t md:border-t-0 md:border-l border-border/10 pt-2 md:pt-0 md:pl-4">
-                            <p className="text-muted-foreground">
-                              First Time? <strong className="text-foreground">{reg.isFirstTime || "Unknown"}</strong>
-                            </p>
-                            <p className="text-muted-foreground flex items-center gap-1.5 flex-wrap">
-                              <MapPin size={12} className="text-primary shrink-0" />
-                              Transport Required? <strong className="text-foreground">{reg.requireTransportation || "No"}</strong>
-                              {reg.pickupLocation && <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-medium">{reg.pickupLocation}</span>}
-                            </p>
-                            <p className="text-muted-foreground flex items-center gap-1.5">
-                              <Users size={12} className="text-primary shrink-0" />
-                              Bringing Friends? <strong className="text-foreground">{reg.withFriends || "No"}</strong>
-                              {reg.friendCount && <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-medium">{reg.friendCount} friend(s)</span>}
-                            </p>
+                          <div>
+                            <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Time Details</label>
+                            <input
+                              type="text"
+                              required
+                              value={rhythmForm.time}
+                              onChange={(e) => setRhythmForm({ ...rhythmForm, time: e.target.value })}
+                              className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                            />
                           </div>
                         </div>
+                      )}
 
-                        {/* Prayer / Expectations text block */}
-                        {reg.expectations && (
-                          <div className="bg-card/40 border border-border/5 p-3 rounded-lg text-xs leading-relaxed text-foreground/80 space-y-1">
-                            <p className="text-[10px] uppercase tracking-wider text-primary/80 font-bold font-mono">Prayer expectations / Requests:</p>
-                            <p>{reg.expectations}</p>
+                      {/* Leadership Team Fields */}
+                      {activeTab === "team" && (
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Name</label>
+                            <input
+                              type="text"
+                              required
+                              value={teamForm.name}
+                              onChange={(e) => setTeamForm({ ...teamForm, name: e.target.value })}
+                              className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                            />
                           </div>
-                        )}
+                          <div>
+                            <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Role/Position</label>
+                            <input
+                              type="text"
+                              required
+                              value={teamForm.role}
+                              onChange={(e) => setTeamForm({ ...teamForm, role: e.target.value })}
+                              className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Photo Gallery Fields */}
+                      {activeTab === "gallery" && (
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">Thumbnail Path/URL</label>
+                            <input
+                              type="text"
+                              required
+                              value={galleryForm.thumb}
+                              onChange={(e) => setGalleryForm({ ...galleryForm, thumb: e.target.value })}
+                              placeholder="/gallery/g1.jpg | https://url"
+                              className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">High-Res / Full-Size URL</label>
+                            <input
+                              type="text"
+                              required
+                              value={galleryForm.full}
+                              onChange={(e) => setGalleryForm({ ...galleryForm, full: e.target.value })}
+                              placeholder="/gallery/g1_full.jpg | https://url"
+                              className="w-full bg-card/25 border border-border/40 rounded-lg px-3 py-2 text-sm text-foreground focus:border-primary outline-none"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex gap-3 justify-end pt-4 border-t border-border/5">
+                        <button
+                          type="button"
+                          onClick={resetForms}
+                          className="px-4 py-2 rounded-lg border border-border/30 text-xs uppercase tracking-wider font-semibold hover:border-foreground/20 text-muted-foreground transition-all cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="bg-primary text-primary-foreground px-6 py-2 rounded-lg text-xs uppercase tracking-widest font-bold hover:bg-primary/95 transition-all cursor-pointer"
+                        >
+                          Save Changes
+                        </button>
                       </div>
-                    ))
+                    </form>
+                  </div>
+                ) : (
+                  activeTab !== "registrations" ? (
+                    <div className="flex justify-between items-center bg-card/30 border border-border/10 p-4 rounded-xl">
+                      <p className="text-xs text-muted-foreground">Manage your list of items or add a new record.</p>
+                      {activeTab !== "resources" ? (
+                        <button
+                          onClick={() => setShowForm(true)}
+                          className="flex items-center gap-1.5 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-primary/95 transition-all cursor-pointer"
+                        >
+                          <Plus size={14} /> Add Item
+                        </button>
+                      ) : (
+                        <div className="text-xs text-muted-foreground">Add resources below (books have a separate form)</div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="bg-card/30 border border-border/10 p-4 rounded-xl text-xs text-muted-foreground">
+                      User registrations submitted on the Contact page. Database items update in real time.
+                    </div>
+                  )
+                )}
+
+                {/* List & Edit existing items in the current collection */}
+                <div className="bg-card/40 backdrop-blur border border-border/10 rounded-xl overflow-hidden shadow-sm">
+                  <div className="p-4 border-b border-border/10 bg-card/20 flex items-center justify-between">
+                    <h4 className="text-xs font-bold uppercase tracking-widest text-primary">Current Entries</h4>
+                    <span className="text-[10px] bg-primary/10 text-primary px-2.5 py-0.5 rounded-full font-mono uppercase font-bold">
+                      {activeTab === "sermons" && `${sermons.length} sermons`}
+                      {activeTab === "events" && `${events.length} events`}
+                      {activeTab === "resources" && `${resources.length} resources, ${books.length} books`}
+                      {activeTab === "rhythms" && `${rhythms.length} rhythm nodes`}
+                      {activeTab === "team" && `${team.length} leaders`}
+                      {activeTab === "gallery" && `${gallery.length} photos`}
+                      {activeTab === "registrations" && `${registrations.length} registrations`}
+                    </span>
+                  </div>
+
+                  {/* SERMONS LISTING */}
+                  {activeTab === "sermons" && (
+                    <div className="divide-y divide-border/5">
+                      {sermons.map((s) => (
+                        <div key={s.id || s.t} className="p-4 flex items-center justify-between hover:bg-card/10 transition-all gap-4">
+                          <div>
+                            <p className="font-semibold text-foreground text-sm">{s.t}</p>
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">{s.p} · {s.c} · {s.len} · {s.img}</p>
+                          </div>
+                          <div className="flex gap-2 shrink-0">
+                            <button onClick={() => startEdit(s)} className="p-2 border border-border/30 hover:border-primary/40 rounded text-foreground/70 hover:text-primary transition-all cursor-pointer"><Edit2 size={12} /></button>
+                            {s.id && (
+                              <button onClick={() => handleDeleteItem("sermons", s.id)} className="p-2 border border-border/30 hover:border-destructive/40 rounded text-foreground/70 hover:text-destructive transition-all cursor-pointer"><Trash2 size={12} /></button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* EVENTS LISTING */}
+                  {activeTab === "events" && (
+                    <div className="divide-y divide-border/5">
+                      {events.map((e) => (
+                        <div key={e.id || e.name} className="p-4 flex items-center justify-between hover:bg-card/10 transition-all gap-4">
+                          <div>
+                            <p className="font-semibold text-foreground text-sm">
+                              {e.name} {e.featured && <span className="ml-2 text-[9px] uppercase tracking-widest bg-primary/20 text-primary font-bold px-1.5 py-0.5 rounded">Featured</span>}
+                            </p>
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">{new Date(e.date).toLocaleString()} · {e.place} · {e.tag}</p>
+                          </div>
+                          <div className="flex gap-2 shrink-0">
+                            <button onClick={() => startEdit(e)} className="p-2 border border-border/30 hover:border-primary/40 rounded text-foreground/70 hover:text-primary transition-all cursor-pointer"><Edit2 size={12} /></button>
+                            {e.id && (
+                              <button onClick={() => handleDeleteItem("events", e.id)} className="p-2 border border-border/30 hover:border-destructive/40 rounded text-foreground/70 hover:text-destructive transition-all cursor-pointer"><Trash2 size={12} /></button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* RESOURCES LISTING */}
+                  {activeTab === "resources" && (
+                    <div className="divide-y divide-border/5">
+                      <div className="p-4 bg-muted/20 text-xs font-bold uppercase tracking-wider border-b border-border/10 text-muted-foreground flex justify-between items-center">
+                        <span>Downloads</span>
+                        <button onClick={() => { resetForms(); setShowForm(true); }} className="text-[10px] text-primary hover:underline cursor-pointer uppercase font-bold">Add Download</button>
+                      </div>
+                      {resources.map((r) => (
+                        <div key={r.id || r.t} className="p-4 flex items-center justify-between hover:bg-card/10 transition-all gap-4">
+                          <div>
+                            <p className="font-semibold text-foreground text-sm">{r.t}</p>
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">{r.tag} · {r.icon} · {r.d}</p>
+                          </div>
+                          <div className="flex gap-2 shrink-0">
+                            <button onClick={() => startEdit(r)} className="p-2 border border-border/30 hover:border-primary/40 rounded text-foreground/70 hover:text-primary transition-all cursor-pointer"><Edit2 size={12} /></button>
+                            {r.id && (
+                              <button onClick={() => handleDeleteItem("resources", r.id)} className="p-2 border border-border/30 hover:border-destructive/40 rounded text-foreground/70 hover:text-destructive transition-all cursor-pointer"><Trash2 size={12} /></button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+
+                      <div className="p-4 bg-muted/20 text-xs font-bold uppercase tracking-wider border-t border-b border-border/10 text-muted-foreground">Recommended Books</div>
+                      
+                      {/* Add book form inline */}
+                      <form onSubmit={handleAddBook} className="p-4 bg-card/10 border-b border-border/5 grid md:grid-cols-3 gap-3 items-end">
+                        <div>
+                          <label className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-1">Book Title</label>
+                          <input
+                            type="text"
+                            required
+                            value={bookForm.title}
+                            onChange={(e) => setBookForm({ ...bookForm, title: e.target.value })}
+                            className="w-full bg-card/25 border border-border/40 rounded px-2.5 py-1.5 text-xs text-foreground focus:border-primary outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[9px] uppercase tracking-wider text-muted-foreground block mb-1">Author</label>
+                          <input
+                            type="text"
+                            required
+                            value={bookForm.author}
+                            onChange={(e) => setBookForm({ ...bookForm, author: e.target.value })}
+                            className="w-full bg-card/25 border border-border/40 rounded px-2.5 py-1.5 text-xs text-foreground focus:border-primary outline-none"
+                          />
+                        </div>
+                        <button
+                          type="submit"
+                          className="bg-primary text-primary-foreground py-1.5 rounded text-[10px] font-bold uppercase tracking-wider hover:bg-primary/95 cursor-pointer h-[34px]"
+                        >
+                          Add Book
+                        </button>
+                      </form>
+
+                      {books.map((b) => (
+                        <div key={b.id || b.title} className="p-4 flex items-center justify-between hover:bg-card/10 transition-all gap-4">
+                          <div>
+                            <p className="font-semibold text-foreground text-sm">{b.title}</p>
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">Author: {b.author}</p>
+                          </div>
+                          <div className="flex gap-2 shrink-0">
+                            {b.id && (
+                              <button onClick={() => handleDeleteItem("recommended_books", b.id)} className="p-2 border border-border/30 hover:border-destructive/40 rounded text-foreground/70 hover:text-destructive transition-all cursor-pointer"><Trash2 size={12} /></button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* RHYTHM LISTING */}
+                  {activeTab === "rhythms" && (
+                    <div className="divide-y divide-border/5">
+                      {rhythms.map((r) => (
+                        <div key={r.id || r.day} className="p-4 flex items-center justify-between hover:bg-card/10 transition-all gap-4">
+                          <div>
+                            <p className="font-semibold text-foreground text-sm">{r.day} — {r.name}</p>
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">Gathering Time: {r.time}</p>
+                          </div>
+                          <div className="flex gap-2 shrink-0">
+                            <button onClick={() => startEdit(r)} className="p-2 border border-border/30 hover:border-primary/40 rounded text-foreground/70 hover:text-primary transition-all cursor-pointer"><Edit2 size={12} /></button>
+                            {r.id && (
+                              <button onClick={() => handleDeleteItem("weekly_rhythm", r.id)} className="p-2 border border-border/30 hover:border-destructive/40 rounded text-foreground/70 hover:text-destructive transition-all cursor-pointer"><Trash2 size={12} /></button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* LEADERSHIP LISTING */}
+                  {activeTab === "team" && (
+                    <div className="divide-y divide-border/5">
+                      {team.map((t) => (
+                        <div key={t.id || t.name} className="p-4 flex items-center justify-between hover:bg-card/10 transition-all gap-4">
+                          <div>
+                            <p className="font-semibold text-foreground text-sm">{t.name}</p>
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">Role: {t.role}</p>
+                          </div>
+                          <div className="flex gap-2 shrink-0">
+                            <button onClick={() => startEdit(t)} className="p-2 border border-border/30 hover:border-primary/40 rounded text-foreground/70 hover:text-primary transition-all cursor-pointer"><Edit2 size={12} /></button>
+                            {t.id && (
+                              <button onClick={() => handleDeleteItem("leadership_team", t.id)} className="p-2 border border-border/30 hover:border-destructive/40 rounded text-foreground/70 hover:text-destructive transition-all cursor-pointer"><Trash2 size={12} /></button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* GALLERY LISTING */}
+                  {activeTab === "gallery" && (
+                    <div className="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-[60vh] overflow-y-auto">
+                      {gallery.map((tile, i) => (
+                        <div key={tile.id || i} className="group relative border border-border/10 rounded-lg overflow-hidden bg-card aspect-square">
+                          <img src={tile.thumb} alt="" className="w-full h-full object-cover opacity-80" />
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-all">
+                            <button
+                              onClick={() => startEdit(tile)}
+                              className="bg-primary/95 text-primary-foreground p-2 rounded hover:scale-105 transition-all cursor-pointer"
+                              title="Edit link"
+                            >
+                              <Edit2 size={12} />
+                            </button>
+                            {tile.id && (
+                              <button
+                                onClick={() => handleDeleteItem("gallery", tile.id)}
+                                className="bg-destructive/95 text-destructive-foreground p-2 rounded hover:scale-105 transition-all cursor-pointer"
+                                title="Delete picture"
+                              >
+                                <Trash2 size={12} />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* REGISTRATIONS LISTING */}
+                  {activeTab === "registrations" && (
+                    <div className="p-4 space-y-4 max-h-[70vh] overflow-y-auto bg-card/20">
+                      {registrations.length === 0 ? (
+                        <p className="text-xs text-muted-foreground text-center py-10">No registrations found in the database.</p>
+                      ) : (
+                        registrations.map((reg) => (
+                          <div key={reg.id} className="bg-card/65 border border-border/10 p-5 rounded-xl space-y-4 hover:border-primary/20 transition-all">
+                            <div className="flex justify-between items-start border-b border-border/5 pb-2">
+                              <div>
+                                <h5 className="font-semibold text-foreground text-base">{reg.name}</h5>
+                                <p className="text-[10px] text-primary/80 uppercase tracking-wider font-mono mt-0.5">
+                                  {reg.ageRange ? `${reg.ageRange} years` : "Age N/A"} · {reg.gender || "Gender N/A"}
+                                </p>
+                              </div>
+                              <button
+                                onClick={() => handleDeleteItem("registrations", reg.id)}
+                                className="text-muted-foreground hover:text-destructive p-1 border border-border/20 hover:border-destructive/30 rounded transition-all cursor-pointer"
+                                title="Delete record"
+                              >
+                                <Trash2 size={12} />
+                              </button>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-4 text-xs">
+                              {/* Contact Details */}
+                              <div className="space-y-2">
+                                <p className="flex items-center gap-2 text-muted-foreground">
+                                  <Mail size={12} className="text-primary shrink-0" />
+                                  <a href={`mailto:${reg.email}`} className="hover:underline hover:text-foreground">{reg.email}</a>
+                                </p>
+                                <p className="flex items-center gap-2 text-muted-foreground">
+                                  <Phone size={12} className="text-primary shrink-0" />
+                                  <a href={`tel:${reg.phone}`} className="hover:underline hover:text-foreground">{reg.phone}</a>
+                                </p>
+                                <p className="flex items-center gap-2 text-muted-foreground">
+                                  <Clock size={12} className="text-primary shrink-0" />
+                                  <span>Registered: {reg.createdAt ? new Date(reg.createdAt).toLocaleString() : "Date N/A"}</span>
+                                </p>
+                              </div>
+
+                              {/* Attendance Info */}
+                              <div className="space-y-2 border-t md:border-t-0 md:border-l border-border/10 pt-2 md:pt-0 md:pl-4">
+                                <p className="text-muted-foreground">
+                                  First Time? <strong className="text-foreground">{reg.isFirstTime || "Unknown"}</strong>
+                                </p>
+                                <p className="text-muted-foreground flex items-center gap-1.5 flex-wrap">
+                                  <MapPin size={12} className="text-primary shrink-0" />
+                                  Transport Required? <strong className="text-foreground">{reg.requireTransportation || "No"}</strong>
+                                  {reg.pickupLocation && <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-medium">{reg.pickupLocation}</span>}
+                                </p>
+                                <p className="text-muted-foreground flex items-center gap-1.5">
+                                  <Users size={12} className="text-primary shrink-0" />
+                                  Bringing Friends? <strong className="text-foreground">{reg.withFriends || "No"}</strong>
+                                  {reg.friendCount && <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-medium">{reg.friendCount} friend(s)</span>}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Prayer / Expectations text block */}
+                            {reg.expectations && (
+                              <div className="bg-card/40 border border-border/5 p-3 rounded-lg text-xs leading-relaxed text-foreground/80 space-y-1">
+                                <p className="text-[10px] uppercase tracking-wider text-primary/80 font-bold font-mono">Prayer expectations / Requests:</p>
+                                <p>{reg.expectations}</p>
+                              </div>
+                            )}
+                          </div>
+                        ))
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
-            </div>
+              </>
+            )}
           </div>
         </div>
       </Section>

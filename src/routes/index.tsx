@@ -66,7 +66,7 @@ import tile17Full from "@/assets/tile17_full.jpg";
 import tile18Full from "@/assets/tile18_full.jpg";
 
 import { useFirestoreCollection } from "@/hooks/useFirestoreCollection";
-import { defaultGallery } from "@/lib/firebase";
+import { defaultGallery, defaultHomepageConfig, resolveImage } from "@/lib/firebase";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -81,6 +81,8 @@ export const Route = createFileRoute("/")({
 function Home() {
   const gallery = useFirestoreCollection("gallery", defaultGallery);
   const tiles = gallery.slice(0, 18);
+  const configs = useFirestoreCollection("homepage_config", [defaultHomepageConfig]);
+  const config = configs[0] || defaultHomepageConfig;
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
 
   return (
@@ -91,7 +93,7 @@ function Home() {
           {/* Background image & deep overlay */}
           <div className="absolute inset-0 z-0">
             <img 
-              src={hero} 
+              src={resolveImage(config.hero_image || "hero")} 
               alt="Youth worship sanctuary" 
               className="h-full w-full object-cover scale-105 hover:scale-100 transition-transform duration-[8000ms] ease-[cubic-bezier(0.16,1,0.3,1)]" 
               width={1920} 
@@ -119,7 +121,7 @@ function Home() {
               transition={{ duration: 1.8, delay: 0.5 }}
               className="font-extrabold text-white text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[1.0] text-balance max-w-4xl [text-shadow:0_4px_24px_rgba(0,0,0,0.5)]"
             >
-              Welcome Home
+              {config.hero_title || "Welcome Home"}
             </motion.h1>
             
             <motion.p
@@ -128,7 +130,7 @@ function Home() {
               transition={{ duration: 1.8, delay: 0.9 }}
               className="mt-6 max-w-xl text-base sm:text-lg md:text-xl text-white/90 font-medium leading-relaxed [text-shadow:0_2px_10px_rgba(0,0,0,0.4)]"
             >
-              We are a new brigade with a passion for Christ and His people, making disciples of all nations.
+              {config.hero_description}
             </motion.p>
 
             <motion.div
@@ -137,7 +139,7 @@ function Home() {
               transition={{ duration: 1.8, delay: 1.2 }}
               className="mt-8 inline-flex items-center gap-2 text-primary font-bold uppercase tracking-wider text-xs bg-black/40 px-4 py-2 rounded-lg border border-primary/20 backdrop-blur-sm"
             >
-              <Clock size={12} /> Sunday Worship • 8:00 AM
+              <Clock size={12} /> {config.hero_time || "Sunday Worship • 8:00 AM"}
             </motion.div>
 
             <motion.div
@@ -205,14 +207,14 @@ function Home() {
           <div className="max-w-7xl mx-auto px-6 lg:px-10">
             <div className="grid lg:grid-cols-12 gap-12 items-center mb-16">
               <div className="lg:col-span-6 space-y-4">
-                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">Our Invitation</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">{config.welcome_eyebrow || "Our Invitation"}</p>
                 <h2 className="font-display text-4xl sm:text-5xl font-light tracking-wide text-foreground">
-                  We're Glad You're Here
+                  {config.welcome_title || "We're Glad You're Here"}
                 </h2>
               </div>
               <div className="lg:col-span-6">
                 <p className="text-foreground/70 leading-relaxed text-sm md:text-base max-w-xl">
-                  Walking into a new church can feel intimidating, but we believe you belong here. Whether you are seeking community, questioning faith, or looking for a home, you are welcomed with open arms.
+                  {config.welcome_description}
                 </p>
               </div>
             </div>
@@ -228,7 +230,7 @@ function Home() {
                   <p className="text-xs text-muted-foreground leading-relaxed">
                     Join us in the main sanctuary for vibrant worship, community connection, and solid biblical teaching.
                   </p>
-                  <p className="font-semibold text-sm text-foreground">8:00 AM</p>
+                  <p className="font-semibold text-sm text-foreground">{config.welcome_service1_time || "8:00 AM"}</p>
                 </div>
               </FadeIn>
 
@@ -241,7 +243,7 @@ function Home() {
                   <p className="text-xs text-muted-foreground leading-relaxed">
                     A midweek recharge for prayers, youth gatherings, cell groups, and direct interactive discipleship study.
                   </p>
-                  <p className="font-semibold text-sm text-foreground">Wednesday at 6:00 PM</p>
+                  <p className="font-semibold text-sm text-foreground">{config.welcome_service2_time || "Wednesday at 6:00 PM"}</p>
                 </div>
               </FadeIn>
 
@@ -252,7 +254,7 @@ function Home() {
                   </div>
                   <h3 className="font-display text-2xl font-light">Our Address</h3>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    2 Archbishop Ademowo Crescent, Off Ago Palace Way, Okota (Near Forte Oil Station), Lagos, Nigeria.<br />
+                    {config.welcome_service3_address}<br />
                     Directions, transit info, and parking details are available.
                   </p>
                   <Link 
@@ -276,7 +278,7 @@ function Home() {
                 <FadeIn>
                   <div className="relative rounded-2xl overflow-hidden shadow-lg border border-border/10 group">
                     <img 
-                      src={churchCongregation} 
+                      src={resolveImage(config.about_image || "churchCongregation")} 
                       alt="Worship congregation" 
                       loading="lazy"
                       className="w-full object-cover scale-100 group-hover:scale-102 transition-transform duration-[4000ms]"
@@ -288,22 +290,26 @@ function Home() {
 
               <div className="md:col-span-6 space-y-6">
                 <FadeIn delay={0.2}>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">Who We Are</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">{config.about_eyebrow || "Who We Are"}</p>
                   <h2 className="font-display text-3xl sm:text-4xl font-light tracking-wide text-foreground">
-                    A Spirit-Filled Community Pursuing Christ
+                    {config.about_title || "A Spirit-Filled Community Pursuing Christ"}
                   </h2>
                   <p className="text-foreground/75 leading-relaxed text-sm md:text-base max-w-lg">
-                    We are a modern, bible-believing community focused on helping the next generation find their identity, purpose, and calling in God. From active small groups to massive youth conferences, we create environments that foster real discipleship and true encounters with God's Spirit.
+                    {config.about_description}
                   </p>
                   <div className="pt-4 space-y-3">
-                    <div className="flex gap-3 items-start">
-                      <span className="size-5 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0 text-xs font-bold">✓</span>
-                      <p className="text-xs text-foreground/80"><strong className="text-foreground">What to Expect:</strong> Casual dress, welcoming faces, authentic modern worship, and practical teachings.</p>
-                    </div>
-                    <div className="flex gap-3 items-start">
-                      <span className="size-5 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0 text-xs font-bold">✓</span>
-                      <p className="text-xs text-foreground/80"><strong className="text-foreground">Our Values:</strong> Word-centered, spirit-led, relationship-driven, and active in city outreach.</p>
-                    </div>
+                    {config.about_expectation1 && (
+                      <div className="flex gap-3 items-start">
+                        <span className="size-5 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0 text-xs font-bold">✓</span>
+                        <p className="text-xs text-foreground/80"><strong className="text-foreground">What to Expect:</strong> {config.about_expectation1.replace("What to Expect: ", "").replace("What to Expect:", "")}</p>
+                      </div>
+                    )}
+                    {config.about_expectation2 && (
+                      <div className="flex gap-3 items-start">
+                        <span className="size-5 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0 text-xs font-bold">✓</span>
+                        <p className="text-xs text-foreground/80"><strong className="text-foreground">Our Values:</strong> {config.about_expectation2.replace("Our Values: ", "").replace("Our Values:", "")}</p>
+                      </div>
+                    )}
                   </div>
                   <div className="pt-6">
                     <Link
@@ -324,12 +330,12 @@ function Home() {
         <section className="py-24 bg-background">
           <div className="max-w-7xl mx-auto px-6 lg:px-10">
             <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
-              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">Ministries</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">{config.ministries_eyebrow || "Ministries"}</p>
               <h2 className="font-display text-3xl sm:text-4xl font-light tracking-wide text-foreground">
-                Finding Your Space to Connect
+                {config.ministries_title || "Finding Your Space to Connect"}
               </h2>
               <p className="text-xs text-muted-foreground leading-relaxed max-w-md mx-auto">
-                No matter your age or phase of life, there is a specialized ministry crafted to support and build you.
+                {config.ministries_description}
               </p>
             </div>
 
@@ -398,16 +404,16 @@ function Home() {
               <FadeIn>
                 <div className="relative aspect-[4/5] rounded-2xl overflow-hidden group border border-border/10 shadow-md">
                   <img 
-                    src={event} 
+                    src={resolveImage(config.featured_event_image || "event")} 
                     alt="Youth conference spotlight" 
                     loading="lazy" 
                     className="h-full w-full object-cover scale-100 group-hover:scale-103 transition-transform duration-[5000ms] opacity-90 dark:opacity-75" 
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
                   <div className="absolute bottom-8 left-8 right-8 text-white z-10">
-                    <p className="text-[10px] uppercase tracking-[0.35em] text-primary mb-2 font-bold">Mar 14 – 17</p>
-                    <h3 className="font-display text-3xl font-light tracking-wide">Carriers — Annual Youth Camp</h3>
-                    <p className="text-xs text-white/80 mt-2 font-light">Three nights. One fire. Built for students & young adults.</p>
+                    <p className="text-[10px] uppercase tracking-[0.35em] text-primary mb-2 font-bold">{config.featured_event_tag || "Mar 14 – 17"}</p>
+                    <h3 className="font-display text-3xl font-light tracking-wide">{config.featured_event_title}</h3>
+                    <p className="text-xs text-white/80 mt-2 font-light">{config.featured_event_place}</p>
                   </div>
                 </div>
               </FadeIn>
@@ -416,16 +422,16 @@ function Home() {
                 <div className="space-y-8 max-w-lg">
                   <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">Gathering Spotlight</p>
                   <h2 className="font-display text-4xl font-light tracking-wide text-foreground">
-                    Carriers Camp
+                    {config.featured_event_title ? config.featured_event_title.split(" — ")[0] : "Carriers Camp"}
                   </h2>
                   <p className="text-foreground/75 leading-relaxed text-sm md:text-base font-light">
-                    Four days of worship, practical workshops, and direct encounter. Built for everyone discovering what it means to carry the presence and fire of God in school, home, and workspace.
+                    {config.featured_event_place}
                   </p>
                   <ul className="space-y-4 text-xs text-foreground/60 border-t border-border/10 pt-8 tracking-wider">
                     {[
-                      ["Worship Nights", "Live from the main sanctuary"],
-                      ["Discipleship Guilds", "Identity, calling, pure pursuit"],
-                      ["City Outreach", "Bring the light out of the room"],
+                      [config.featured_event_bullet1_title || "Worship Nights", config.featured_event_bullet1_desc || "Live from the main sanctuary"],
+                      [config.featured_event_bullet2_title || "Discipleship Guilds", config.featured_event_bullet2_desc || "Identity, calling, pure pursuit"],
+                      [config.featured_event_bullet3_title || "City Outreach", config.featured_event_bullet3_desc || "Bring the light out of the room"],
                     ].map(([k, v]) => (
                       <li key={k} className="flex justify-between gap-4 py-1 border-b border-border/5">
                         <span className="text-foreground/80 font-semibold">{k}</span>

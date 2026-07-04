@@ -7,6 +7,9 @@ import { BookOpen, FileText, Flame, Compass, HelpCircle } from "lucide-react";
 import community from "@/assets/community.jpg";
 import word from "@/assets/word.jpg";
 import event from "@/assets/event.jpg";
+import hero from "@/assets/hero.jpg";
+import churchCongregation from "@/assets/church_congregation.png";
+import churchTeam from "@/assets/church_team.png";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAa26Wkibi0GT4S3DQIng7W0kWcHBdhxSU",
@@ -39,6 +42,9 @@ export function resolveImage(img: string): string {
   if (img === "community") return community;
   if (img === "word") return word;
   if (img === "event") return event;
+  if (img === "hero") return hero;
+  if (img === "churchCongregation") return churchCongregation;
+  if (img === "churchTeam") return churchTeam;
   return img; // Assume it's a dynamic URL or path
 }
 
@@ -100,6 +106,50 @@ export const defaultTeam = [
   { name: "Sarah M.", role: "Discipleship Lead" },
   { name: "Joseph K.", role: "Worship Lead" }
 ];
+
+export const defaultHomepageConfig = {
+  hero_title: "Welcome Home",
+  hero_description: "We are a new brigade with a passion for Christ and His people, making disciples of all nations.",
+  hero_time: "Sunday Worship • 8:00 AM",
+  hero_image: "hero",
+  welcome_eyebrow: "Our Invitation",
+  welcome_title: "We're Glad You're Here",
+  welcome_description: "Walking into a new church can feel intimidating, but we believe you belong here. Whether you are seeking community, questioning faith, or looking for a home, you are welcomed with open arms.",
+  welcome_service1_time: "8:00 AM",
+  welcome_service2_time: "Wednesday at 6:00 PM",
+  welcome_service3_address: "2 Archbishop Ademowo Crescent, Off Ago Palace Way, Okota (Near Forte Oil Station), Lagos, Nigeria.",
+  about_eyebrow: "Who We Are",
+  about_title: "A Spirit-Filled Community Pursuing Christ",
+  about_description: "We are a modern, bible-believing community focused on helping the next generation find their identity, purpose, and calling in God. From active small groups to massive youth conferences, we create environments that foster real discipleship and true encounters with God's Spirit.",
+  about_expectation1: "What to Expect: Casual dress, welcoming faces, authentic modern worship, and practical teachings.",
+  about_expectation2: "Our Values: Word-centered, spirit-led, relationship-driven, and active in city outreach.",
+  about_image: "churchCongregation",
+  ministries_eyebrow: "Ministries",
+  ministries_title: "Finding Your Space to Connect",
+  ministries_description: "No matter your age or phase of life, there is a specialized ministry crafted to support and build you.",
+  featured_event_title: "Carriers — Annual Youth Camp",
+  featured_event_date: "2026-06-14T18:00:00",
+  featured_event_place: "Three nights. One fire. Built for students & young adults.",
+  featured_event_tag: "Mar 14 – 17",
+  featured_event_image: "event",
+  featured_event_bullet1_title: "Worship Nights",
+  featured_event_bullet1_desc: "Live from the main sanctuary",
+  featured_event_bullet2_title: "Discipleship Guilds",
+  featured_event_bullet2_desc: "Identity, calling, pure pursuit",
+  featured_event_bullet3_title: "City Outreach",
+  featured_event_bullet3_desc: "Bring the light out of the room"
+};
+
+export const defaultFooterConfig = {
+  company_name: "Youth on Fire",
+  company_description: "A generation set ablaze by the Spirit — pursuing Christ, building community, carrying the flame.",
+  instagram_link: "#",
+  youtube_link: "#",
+  whatsapp_link: "#",
+  contact_email: "info@youthonfire.org",
+  contact_phone: "+1 (555) 123-4567",
+  contact_address: "Main Sanctuary, City Church"
+};
 
 // Firestore CRUD Helpers
 export async function addFirestoreDoc(coll: string, data: any) {
