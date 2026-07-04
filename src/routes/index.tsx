@@ -305,37 +305,61 @@ function Home() {
 
         {/* What to Expect Section */}
         <Section eyebrow="What to Expect" title="First Time? Here is what to expect this Sunday.">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16">
             {[
               {
+                num: "01",
+                icon: <Clock size={16} className="text-primary" />,
                 title: "Arrival & Service Length",
                 desc: "Services begin promptly at 8:00 AM and run for about 90 minutes. Plan to arrive 10-15 minutes early to connect and find a comfortable seat."
               },
               {
+                num: "02",
+                icon: <Users size={16} className="text-primary" />,
                 title: "Dress Code",
                 desc: "Come as you are! We are a community of all ages and styles. You'll see everything from casual jeans and t-shirts to traditional attire."
               },
               {
+                num: "03",
+                icon: <MapPin size={16} className="text-primary" />,
                 title: "Safe & Guided Parking",
                 desc: "Secure parking is available inside and directly outside the sanctuary premises, with helpful traffic team members to guide you in."
               },
               {
+                num: "04",
+                icon: <Compass size={16} className="text-primary" />,
                 title: "Kids & Teens Programs",
                 desc: "Our children's church and teen groups meet in safe, dedicated spaces with age-appropriate worship, bible lessons, and fun activities."
               },
               {
+                num: "05",
+                icon: <Gift size={16} className="text-primary" />,
                 title: "Friendly Welcome",
                 desc: "From the moment you walk in, our welcome team is ready to guide you. If you're new, stop by the welcome hub for a special gift!"
               },
               {
+                num: "06",
+                icon: <Flame size={16} className="text-primary" />,
                 title: "Worship & Word",
                 desc: "Expect passionate, contemporary praise and worship, followed by a relevant, Scripture-grounded sermon designed to challenge and inspire."
               }
             ].map((item, idx) => (
               <FadeIn key={item.title} delay={idx * 0.05}>
-                <div className="space-y-3">
-                  <h3 className="font-display text-xl font-medium text-foreground">{item.title}</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
+                <div className="group relative border-l border-border/10 pl-6 hover:border-primary/60 transition-all duration-700">
+                  <div className="flex items-center justify-between">
+                    <span className="font-display text-5xl font-light text-primary/10 select-none transition-colors duration-700 group-hover:text-primary/20">
+                      {item.num}
+                    </span>
+                    <div className="size-8 rounded-full bg-secondary/30 flex items-center justify-center transition-all duration-700 group-hover:bg-primary/10">
+                      {item.icon}
+                    </div>
+                  </div>
+                  <h3 className="font-display text-xl font-medium text-foreground mt-4 transition-colors duration-500 group-hover:text-primary">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed mt-3 max-w-sm">
+                    {item.desc}
+                  </p>
                 </div>
               </FadeIn>
             ))}
