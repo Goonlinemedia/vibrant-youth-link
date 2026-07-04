@@ -66,7 +66,7 @@ import tile17Full from "@/assets/tile17_full.jpg";
 import tile18Full from "@/assets/tile18_full.jpg";
 
 import { useFirestoreCollection } from "@/hooks/useFirestoreCollection";
-import { defaultGallery, defaultHomepageConfig, resolveImage } from "@/lib/firebase";
+import { defaultGallery, defaultHomepageConfig, defaultSermons, resolveImage } from "@/lib/firebase";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -78,12 +78,45 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
+const defaultHomepageConfigsArray = [defaultHomepageConfig];
+
 function Home() {
   const gallery = useFirestoreCollection("gallery", defaultGallery);
   const tiles = gallery.slice(0, 18);
-  const configs = useFirestoreCollection("homepage_config", [defaultHomepageConfig]);
+  const configs = useFirestoreCollection("homepage_config", defaultHomepageConfigsArray);
   const config = configs[0] || defaultHomepageConfig;
+  const sermons = useFirestoreCollection("sermons", defaultSermons);
+  const latestSermon = sermons[0] || defaultSermons[0];
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
+  const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
+
+  const getYouTubeId = (url: string) => {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  const getSermonImage = (sermon: any) => {
+    if (sermon && sermon.videoUrl) {
+      const ytId = getYouTubeId(sermon.videoUrl);
+      if (ytId) {
+        return `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+      }
+    }
+    return resolveImage(sermon?.img || "community");
+  };
+
+  const handleSermonClick = (sermon: any) => {
+    if (sermon && sermon.videoUrl) {
+      const id = getYouTubeId(sermon.videoUrl);
+      if (id) {
+        setActiveVideoUrl(sermon.videoUrl);
+        return;
+      }
+    }
+    window.open("https://www.youtube.com/@overcomersgrace/videos", "_blank", "noopener,noreferrer");
+  };
 
   return (
     <>
@@ -458,24 +491,25 @@ function Home() {
             </div>
           </div>
         </section>
-
-
         {/* 6. LATEST SERMONS (Clean message plays) - BG: White */}
         <section className="py-24 bg-background">
           <div className="max-w-7xl mx-auto px-6 lg:px-10">
             <div className="grid md:grid-cols-12 gap-12 items-center">
               <FadeIn className="md:col-span-7">
-                <div className="aspect-video rounded-2xl overflow-hidden bg-card relative group cursor-pointer border border-border/10 shadow-lg">
+                <div 
+                  onClick={() => handleSermonClick(latestSermon)}
+                  className="aspect-video rounded-2xl overflow-hidden bg-card relative group cursor-pointer border border-border/10 shadow-lg"
+                >
                   <img 
-                    src={community} 
+                    src={getSermonImage(latestSermon)} 
                     alt="Latest message" 
                     loading="lazy" 
                     className="h-full w-full object-cover opacity-85 dark:opacity-60 scale-100 group-hover:scale-102 transition-all duration-[4000ms]" 
                   />
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-1000" />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center scale-95 group-hover:scale-105 transition-all duration-700 shadow-lg">
-                      <Play size={20} className="text-white translate-x-0.5 fill-current" />
+                    <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center scale-95 group-hover:scale-105 transition-all duration-700 shadow-lg text-primary-foreground">
+                      <Play size={20} className="fill-current translate-x-0.5" />
                     </div>
                   </div>
                 </div>
@@ -484,22 +518,28 @@ function Home() {
               <FadeIn delay={0.25} className="md:col-span-5 space-y-6">
                 <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">Latest Sermon</p>
                 <h3 className="font-display text-2xl md:text-3xl font-light tracking-wide leading-snug">
-                  Acts 2 was not the destination — it was the threshold.
+                  {latestSermon.t}
                 </h3>
-                <p className="text-foreground/70 text-xs leading-relaxed tracking-wider">
-                  What does it mean to be a Pentecost generation today? A study on what happens when ordinary people surrender space to an extraordinary God.
+                <p className="text-foreground/75 text-xs leading-relaxed tracking-wider">
+                  {latestSermon.t === "When the fire fell" ? "What does it mean to be a Pentecost generation today? A study on what happens when ordinary people surrender space to an extraordinary God." : `Watch our latest sermon message "${latestSermon.t}" preached by ${latestSermon.p}.`}
                 </p>
                 <div className="pt-2 flex flex-wrap gap-4 text-[10px] uppercase tracking-wider text-muted-foreground">
-                  <span>Pastor Daniel</span>
+                  <span>{latestSermon.p}</span>
                   <span>•</span>
-                  <span>42 mins watch</span>
+                  <span>{latestSermon.len} watch</span>
                 </div>
                 <div className="pt-4 flex gap-4">
-                  <Link 
-                    to="/sermons" 
+                  <button 
+                    onClick={() => handleSermonClick(latestSermon)}
                     className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider hover:bg-foreground/85 transition-all duration-500 cursor-pointer"
                   >
-                    Watch Series
+                    Watch Now
+                  </button>
+                  <Link 
+                    to="/sermons" 
+                    className="inline-flex items-center gap-2 border border-border px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider hover:bg-card transition-all duration-500 cursor-pointer"
+                  >
+                    View All
                   </Link>
                 </div>
               </FadeIn>
@@ -727,6 +767,53 @@ function Home() {
           >
             <ChevronRight size={24} />
           </button>
+        </div>
+      )}
+
+      {/* Embedded YouTube Player Modal */}
+      {activeVideoUrl && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4"
+          onClick={() => setActiveVideoUrl(null)}
+        >
+          <div 
+            className="relative w-full max-w-4xl bg-card border border-white/5 rounded-xl overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              onClick={() => setActiveVideoUrl(null)}
+              className="absolute top-4 right-4 z-10 bg-black/50 text-white/80 hover:text-white p-2 rounded-full backdrop-blur-sm transition-all hover:bg-black/85"
+            >
+              <X size={18} />
+            </button>
+            <div className="aspect-video w-full bg-black relative">
+              <iframe
+                src={`https://www.youtube.com/embed/${getYouTubeId(activeVideoUrl)}?autoplay=1`}
+                title="YouTube Video Player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                className="absolute inset-0 w-full h-full"
+              />
+            </div>
+            <div className="p-5 flex justify-between items-center bg-card/95 border-t border-border/10">
+              <div>
+                <p className="text-[10px] uppercase tracking-widest text-primary font-bold">Now Streaming</p>
+                <h4 className="text-base font-semibold text-foreground mt-1">
+                  {latestSermon.t}
+                </h4>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Preacher: {latestSermon.p}
+                </p>
+              </div>
+              <button 
+                onClick={() => setActiveVideoUrl(null)}
+                className="bg-primary hover:bg-primary/95 text-primary-foreground px-5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
+              >
+                Close Stream
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </>

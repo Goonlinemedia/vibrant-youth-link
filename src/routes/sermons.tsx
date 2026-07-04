@@ -31,6 +31,16 @@ function Sermons() {
     return (match && match[2].length === 11) ? match[2] : null;
   };
 
+  const getSermonImage = (sermon: any) => {
+    if (sermon && sermon.videoUrl) {
+      const ytId = getYouTubeId(sermon.videoUrl);
+      if (ytId) {
+        return `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+      }
+    }
+    return resolveImage(sermon.img);
+  };
+
   const handleSermonClick = (sermon: any) => {
     if (sermon.videoUrl) {
       const id = getYouTubeId(sermon.videoUrl);
@@ -70,7 +80,7 @@ function Sermons() {
                 className="group cursor-pointer"
               >
                 <div className="aspect-video rounded-md overflow-hidden bg-card relative border border-border/10">
-                  <img src={resolveImage(s.img)} alt="" loading="lazy" className="h-full w-full object-cover opacity-70 group-hover:opacity-90 group-hover:scale-105 transition-all duration-1000" />
+                  <img src={getSermonImage(s)} alt="" loading="lazy" className="h-full w-full object-cover opacity-70 group-hover:opacity-90 group-hover:scale-105 transition-all duration-1000" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="h-12 w-12 rounded-full bg-primary/95 text-primary-foreground flex items-center justify-center scale-95 group-hover:scale-105 transition-all duration-500 shadow-md">
                       <Play size={16} className="fill-current translate-x-0.5" />
