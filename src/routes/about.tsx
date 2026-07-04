@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Layout, Section, FadeIn } from "@/components/Layout";
 import community from "@/assets/community.jpg";
+import { useFirestoreCollection } from "@/hooks/useFirestoreCollection";
+import { defaultTeam, defaultRhythms } from "@/lib/firebase";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -13,6 +15,9 @@ export const Route = createFileRoute("/about")({
 });
 
 function About() {
+  const team = useFirestoreCollection("leadership_team", defaultTeam);
+  const rhythms = useFirestoreCollection("weekly_rhythm", defaultRhythms);
+
   return (
     <Layout>
       <Section eyebrow="About us" title="We exist to see a generation living unashamed of Jesus.">
@@ -53,16 +58,12 @@ function About() {
 
       <Section eyebrow="Leadership" title="The team carrying this.">
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
-          {[
-            { n: "Pastor Daniel O.", r: "Youth Pastor" },
-            { n: "Sarah M.", r: "Discipleship Lead" },
-            { n: "Joseph K.", r: "Worship Lead" },
-          ].map((p) => (
-            <FadeIn key={p.n}>
+          {team.map((p) => (
+            <FadeIn key={p.name}>
               <div className="group">
                 <div className="aspect-[4/5] rounded-md bg-card overflow-hidden mb-4 ember-glow" />
-                <p className="font-display text-xl">{p.n}</p>
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mt-1">{p.r}</p>
+                <p className="font-display text-xl">{p.name}</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mt-1">{p.role}</p>
               </div>
             </FadeIn>
           ))}
@@ -71,16 +72,11 @@ function About() {
 
       <Section eyebrow="Weekly rhythm" title="When we gather.">
         <ul className="divide-y divide-border/40 border-y border-border/40">
-          {[
-            ["Friday", "Youth Night", "6:30 PM"],
-            ["Sunday", "Main Service", "9:00 AM & 11:00 AM"],
-            ["Wednesday", "Prayer & Word", "6:00 PM"],
-            ["Saturday", "Small Groups", "Various locations"],
-          ].map(([d, n, t]) => (
-            <li key={d} className="grid grid-cols-3 py-6 group hover:px-4 transition-all duration-500">
-              <span className="text-xs uppercase tracking-[0.3em] text-primary/80 self-center">{d}</span>
-              <span className="font-display text-2xl">{n}</span>
-              <span className="text-foreground/60 text-sm self-center justify-self-end">{t}</span>
+          {rhythms.map((r) => (
+            <li key={r.day} className="grid grid-cols-3 py-6 group hover:px-4 transition-all duration-500">
+              <span className="text-xs uppercase tracking-[0.3em] text-primary/80 self-center">{r.day}</span>
+              <span className="font-display text-2xl">{r.name}</span>
+              <span className="text-foreground/60 text-sm self-center justify-self-end">{r.time}</span>
             </li>
           ))}
         </ul>

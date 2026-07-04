@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Layout, Section, FadeIn } from "@/components/Layout";
 import { useEffect, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
-import event from "@/assets/event.jpg";
+import { useFirestoreCollection } from "@/hooks/useFirestoreCollection";
+import { defaultEvents, resolveImage } from "@/lib/firebase";
 
 export const Route = createFileRoute("/events")({
   head: () => ({
@@ -14,20 +15,13 @@ export const Route = createFileRoute("/events")({
   component: Events,
 });
 
-const upcoming = [
-  { date: "2026-06-14T18:00:00", name: "Carriers Camp 2026", place: "Mountview Retreat", tag: "Camp", featured: true },
-  { date: "2026-06-02T19:00:00", name: "Burning Hearts — Prayer Night", place: "Main Auditorium", tag: "Prayer" },
-  { date: "2026-06-21T16:00:00", name: "Campus Outreach", place: "City University", tag: "Outreach" },
-  { date: "2026-07-09T18:30:00", name: "Worship Encounter", place: "Main Auditorium", tag: "Worship" },
-];
-
 function useCountdown(target: string) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
-  const diff = Math.max(0, new Date(target).getTime() - now);
+  const diff = Math.max(0, new Date(target || Date.now()).getTime() - now);
   const d = Math.floor(diff / 86400000);
   const h = Math.floor((diff / 3600000) % 24);
   const m = Math.floor((diff / 60000) % 60);
@@ -36,7 +30,14 @@ function useCountdown(target: string) {
 }
 
 function Events() {
-  const featured = upcoming.find((e) => e.featured)!;
+  const upcoming = useFirestoreCollection("events", defaultEvents);
+  const featured = upcoming.find((e) => e.featured) || upcoming[0] || {
+    date: "2026-06-14T18:00:00",
+    name: "Carriers Camp 2026",
+    place: "Mountview Retreat",
+    tag: "Camp",
+    img: "event"
+  };
   const c = useCountdown(featured.date);
 
   return (
@@ -44,7 +45,7 @@ function Events() {
       <Section eyebrow="Events" title="Mark your calendar.">
         <FadeIn>
           <div className="relative rounded-md overflow-hidden">
-            <img src={event} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-80 dark:opacity-60" />
+            <img src={resolveImage(featured.img || "event")} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-80 dark:opacity-60" />
             <div className="absolute inset-0 bg-gradient-to-t from-background/90 dark:from-background via-background/40 dark:via-background/60 to-background/10 dark:to-background/20" />
             <div className="relative p-10 md:p-16 min-h-[420px] flex flex-col justify-end">
               <p className="text-xs uppercase tracking-[0.3em] text-primary/90">Featured · {featured.tag}</p>

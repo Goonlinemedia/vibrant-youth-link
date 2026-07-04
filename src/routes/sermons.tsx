@@ -2,9 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Layout, Section, FadeIn } from "@/components/Layout";
 import { Play } from "lucide-react";
 import { useState } from "react";
-import community from "@/assets/community.jpg";
-import word from "@/assets/word.jpg";
-import event from "@/assets/event.jpg";
+import { useFirestoreCollection } from "@/hooks/useFirestoreCollection";
+import { defaultSermons, resolveImage } from "@/lib/firebase";
 
 export const Route = createFileRoute("/sermons")({
   head: () => ({
@@ -18,16 +17,8 @@ export const Route = createFileRoute("/sermons")({
 
 const categories = ["All", "Faith", "Relationships", "Purpose", "Leadership", "Prayer"] as const;
 
-const sermons = [
-  { t: "When the fire fell", p: "Pastor Daniel", c: "Faith", len: "42m", img: community },
-  { t: "Designed for purpose", p: "Sarah M.", c: "Purpose", len: "36m", img: word },
-  { t: "The prayer that moves heaven", p: "Pastor Daniel", c: "Prayer", len: "48m", img: event },
-  { t: "Dating, waiting, knowing", p: "Joseph K.", c: "Relationships", len: "39m", img: community },
-  { t: "Lead from the secret place", p: "Sarah M.", c: "Leadership", len: "31m", img: word },
-  { t: "Faith in the unseen", p: "Pastor Daniel", c: "Faith", len: "44m", img: event },
-];
-
 function Sermons() {
+  const sermons = useFirestoreCollection("sermons", defaultSermons);
   const [cat, setCat] = useState<(typeof categories)[number]>("All");
   const list = cat === "All" ? sermons : sermons.filter((s) => s.c === cat);
 
@@ -55,7 +46,7 @@ function Sermons() {
             <FadeIn key={s.t} delay={i * 0.05}>
               <article className="group cursor-pointer">
                 <div className="aspect-video rounded-md overflow-hidden bg-card relative">
-                  <img src={s.img} alt="" loading="lazy" className="h-full w-full object-cover opacity-70 group-hover:opacity-90 group-hover:scale-105 transition-all duration-1000" />
+                  <img src={resolveImage(s.img)} alt="" loading="lazy" className="h-full w-full object-cover opacity-70 group-hover:opacity-90 group-hover:scale-105 transition-all duration-1000" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="h-12 w-12 rounded-full bg-primary/90 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-700">
                       <Play size={16} className="text-primary-foreground translate-x-0.5" />
