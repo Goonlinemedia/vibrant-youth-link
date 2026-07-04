@@ -25,7 +25,7 @@ import {
   defaultFooterConfig
 } from "@/lib/firebase";
 import { useFirestoreCollection } from "@/hooks/useFirestoreCollection";
-import { Plus, Edit2, Trash2, LogOut, CheckCircle, AlertCircle, RefreshCw, Mail, Phone, Clock, Users, MapPin, Save, Globe } from "lucide-react";
+import { Plus, Edit2, Trash2, LogOut, CheckCircle, AlertCircle, RefreshCw, Mail, Phone, Clock, Users, MapPin, Save, Globe, Copy } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -1541,6 +1541,16 @@ function AdminPortal() {
                               title="Edit link"
                             >
                               <Edit2 size={12} />
+                            </button>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(tile.full);
+                                triggerResetSuccess("High-res URL copied to clipboard!");
+                              }}
+                              className="bg-muted text-muted-foreground p-2 rounded hover:scale-105 transition-all cursor-pointer hover:bg-foreground hover:text-background"
+                              title="Copy High-res URL"
+                            >
+                              <Copy size={12} />
                             </button>
                             {tile.id && (
                               <button

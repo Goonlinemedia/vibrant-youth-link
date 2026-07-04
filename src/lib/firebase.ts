@@ -45,6 +45,12 @@ export function resolveImage(img: string): string {
   if (img === "hero") return hero;
   if (img === "churchCongregation") return churchCongregation;
   if (img === "churchTeam") return churchTeam;
+  
+  // Auto-promote low-res gallery thumbnails to high-res images on the website
+  if (img && img.startsWith("/gallery/g") && img.endsWith(".jpg") && !img.includes("_full")) {
+    return img.replace(".jpg", "_full.jpg");
+  }
+  
   return img; // Assume it's a dynamic URL or path
 }
 
