@@ -37,6 +37,10 @@ export const Route = createFileRoute("/admin")({
   component: AdminPortal,
 });
 
+const defaultHomepageConfigsArray = [defaultHomepageConfig];
+const defaultFooterConfigsArray = [defaultFooterConfig];
+const emptyRegistrationsArray: any[] = [];
+
 function AdminPortal() {
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -54,12 +58,12 @@ function AdminPortal() {
   const rhythms = useFirestoreCollection("weekly_rhythm", defaultRhythms) as any[];
   const team = useFirestoreCollection("leadership_team", defaultTeam) as any[];
   const gallery = useFirestoreCollection("gallery", defaultGallery) as any[];
-  const registrations = useFirestoreCollection("registrations", []) as any[];
+  const registrations = useFirestoreCollection("registrations", emptyRegistrationsArray) as any[];
 
   // Live Config document collections
-  const homepageConfigs = useFirestoreCollection("homepage_config", [defaultHomepageConfig]) as any[];
+  const homepageConfigs = useFirestoreCollection("homepage_config", defaultHomepageConfigsArray) as any[];
   const homepageConfig = homepageConfigs[0] || defaultHomepageConfig;
-  const footerConfigs = useFirestoreCollection("footer_config", [defaultFooterConfig]) as any[];
+  const footerConfigs = useFirestoreCollection("footer_config", defaultFooterConfigsArray) as any[];
   const footerConfig = footerConfigs[0] || defaultFooterConfig;
 
   // Tab state
