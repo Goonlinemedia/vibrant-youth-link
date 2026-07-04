@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Layout, Section, FadeIn } from "@/components/Layout";
 import { useState } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { motion } from "motion/react";
 
 // Generate paths dynamically for all 55 gallery images in the public folder
 const tiles = Array.from({ length: 55 }, (_, i) => ({
@@ -23,13 +24,17 @@ function Gallery() {
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
 
   return (
-    <Layout>
-      <Section eyebrow="Gallery" title="Moments from the fire.">
-        {/* We use the same tiles-grid grid layout as the homepage to keep sizes matching */}
-        <div className="tiles-grid gap-0">
-          {tiles.map((tile, i) => (
-            <FadeIn key={i} delay={i * 0.02}>
-              <div 
+    <>
+      <Layout>
+        <Section eyebrow="Gallery" title="Moments from the fire.">
+          {/* We use the same tiles-grid grid layout as the homepage to keep sizes matching */}
+          <div className="tiles-grid gap-0">
+            {tiles.map((tile, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: i * 0.02 }}
                 className="relative aspect-square overflow-hidden group cursor-pointer"
                 onClick={() => setActiveImageIndex(i)}
               >
@@ -40,11 +45,11 @@ function Gallery() {
                   className="w-full h-full object-cover scale-100 group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
                 <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-              </div>
-            </FadeIn>
-          ))}
-        </div>
-      </Section>
+              </motion.div>
+            ))}
+          </div>
+        </Section>
+      </Layout>
 
       {/* Lightbox Modal overlay with next/prev controls */}
       {activeImageIndex !== null && (
@@ -101,6 +106,6 @@ function Gallery() {
           </button>
         </div>
       )}
-    </Layout>
+    </>
   );
 }

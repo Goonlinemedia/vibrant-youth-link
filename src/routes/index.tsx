@@ -144,7 +144,7 @@ function Home() {
               transition={{ duration: 1.8, delay: 0.9 }}
               className="mt-6 max-w-xl text-base sm:text-lg md:text-xl text-white/90 font-medium leading-relaxed [text-shadow:0_2px_10px_rgba(0,0,0,0.4)]"
             >
-              We are a new brigade with passion for Christ and His people, to make disciples of all nations.
+              We are a new brigade with a passion for Christ and His people, making disciples of all nations.
             </motion.p>
 
             <motion.div
@@ -682,64 +682,63 @@ function Home() {
             </FadeIn>
           </div>
         </section>
-
-        {/* Lightbox Modal overlay with next/prev controls */}
-        {activeImageIndex !== null && (
-          <div 
-            className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center backdrop-blur-md transition-all duration-500"
-            onClick={() => setActiveImageIndex(null)}
-          >
-            {/* Close button */}
-            <button 
-              className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-all duration-300 cursor-pointer"
-              onClick={(e) => {
-                e.stopPropagation();
-                setActiveImageIndex(null);
-              }}
-            >
-              <X size={24} />
-            </button>
-
-            {/* Left navigation arrow */}
-            <button 
-              className="absolute left-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-all duration-300 cursor-pointer"
-              onClick={(e) => {
-                e.stopPropagation();
-                setActiveImageIndex((prev) => (prev !== null ? (prev - 1 + tiles.length) % tiles.length : null));
-              }}
-            >
-              <ChevronLeft size={24} />
-            </button>
-
-            {/* Main Lightbox Image */}
-            <div 
-              className="relative max-w-[85vw] max-h-[80vh] flex flex-col items-center justify-center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <img 
-                src={tiles[activeImageIndex].full} 
-                alt={`Youth gathering high-res preview`} 
-                className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl border border-white/10"
-              />
-              <p className="mt-4 text-xs text-white/50 tracking-widest uppercase font-mono">
-                Image {activeImageIndex + 1} of {tiles.length}
-              </p>
-            </div>
-
-            {/* Right navigation arrow */}
-            <button 
-              className="absolute right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-all duration-300 cursor-pointer"
-              onClick={(e) => {
-                e.stopPropagation();
-                setActiveImageIndex((prev) => (prev !== null ? (prev + 1) % tiles.length : null));
-              }}
-            >
-              <ChevronRight size={24} />
-            </button>
-          </div>
-        )}
-
       </Layout>
+
+      {/* Lightbox Modal overlay with next/prev controls */}
+      {activeImageIndex !== null && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center backdrop-blur-md transition-all duration-500"
+          onClick={() => setActiveImageIndex(null)}
+        >
+          {/* Close button */}
+          <button 
+            className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-all duration-300 cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              setActiveImageIndex(null);
+            }}
+          >
+            <X size={24} />
+          </button>
+
+          {/* Left navigation arrow */}
+          <button 
+            className="absolute left-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-all duration-300 cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              setActiveImageIndex((prev) => (prev !== null ? (prev - 1 + tiles.length) % tiles.length : null));
+            }}
+          >
+            <ChevronLeft size={24} />
+          </button>
+
+          {/* Main Lightbox Image */}
+          <div 
+            className="relative max-w-[85vw] max-h-[80vh] flex flex-col items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img 
+              src={tiles[activeImageIndex].full} 
+              alt={`Youth gathering high-res preview`} 
+              className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl border border-white/10"
+            />
+            <p className="mt-4 text-xs text-white/50 tracking-widest uppercase font-mono">
+              Image {activeImageIndex + 1} of {tiles.length}
+            </p>
+          </div>
+
+          {/* Right navigation arrow */}
+          <button 
+            className="absolute right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-all duration-300 cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              setActiveImageIndex((prev) => (prev !== null ? (prev + 1) % tiles.length : null));
+            }}
+          >
+            <ChevronRight size={24} />
+          </button>
+        </div>
+      )}
     </>
   );
 }
