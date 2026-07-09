@@ -19,5 +19,16 @@ export default defineConfig({
       serverDir: ".vercel/output/functions/__server.func",
       publicDir: ".vercel/output/static",
     },
-  },
+    routeRules: {
+      "/**": {
+        headers: {
+          "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://api.fontshare.com; img-src 'self' data: blob: https://img.youtube.com https://*.googleapis.com https://*.firebaseapp.com; font-src 'self' data: https://fonts.gstatic.com https://api.fontshare.com https://cdn.fontshare.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.firebaseio.com wss://*.firebaseio.com https://www.google-analytics.com https://*.google-analytics.com https://*.googletagmanager.com; frame-src 'self' https://www.youtube.com https://youtube.com https://www.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests;",
+          "X-Frame-Options": "SAMEORIGIN",
+          "X-Content-Type-Options": "nosniff",
+          "Referrer-Policy": "strict-origin-when-cross-origin",
+          "Permissions-Policy": "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+        }
+      }
+    }
+  } as any,
 });
